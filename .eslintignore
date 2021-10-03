@@ -1,0 +1,9 @@
+jest.config.js
+node_modules
+dist
+.github
+.idea
+coverage
+terraform
+.terraform
+tools/generator/templates

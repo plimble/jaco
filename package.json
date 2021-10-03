@@ -1,0 +1,73 @@
+{
+  "name": "jaco",
+  "version": "0.0.0",
+  "description": "Videl Lambda framework",
+  "files": [
+    "libs"
+  ],
+  "type": "module",
+  "scripts": {
+    "clean": "rm -rf libs",
+    "build": "yarn clean && tsc -p tsconfig.build.json",
+    "lint": "eslint ./src/**/*.ts ./tests/**/*.ts",
+    "test": "jest -i",
+    "test:coverage": "jest --coverage --collectCoverage --collectCoverageFrom=src/**.ts",
+    "prepack": "yarn build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onedaycat/videl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/onedaycat/videl/issues"
+  },
+  "homepage": "https://github.com/onedaycat/videl#readme",
+  "private": true,
+  "dependencies": {
+    "immer": "^9.0.6",
+    "node-fetch": "^3.0.0",
+    "cuid": "^2.1.8",
+    "dayjs": "^1.10.7",
+    "fast-copy": "^2.1.1",
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^4.6.0"
+  },
+  "devDependencies": {
+    "@pulumi/pulumi": "^3.13.2",
+    "@pulumi/aws": "^4.22.1",
+    "@pulumi/awsx": "^0.32.0",
+    "@types/aws-lambda": "^8.10.83",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^14.17.20",
+    "@typescript-eslint/eslint-plugin": "^4.32.0",
+    "@typescript-eslint/parser": "^4.32.0",
+    "aws-sdk": "2.952.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.2.4",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.3"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "node",
+      "js",
+      "json"
+    ],
+    "roots": [
+      "tests"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "setupFiles": [
+      "reflect-metadata"
+    ],
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.ts"
+    ]
+  }
+}
