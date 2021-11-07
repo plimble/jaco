@@ -1,5 +1,5 @@
 import SpyInstance = jest.SpyInstance
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from './types'
 
 type FunctionPropertyNames<T> = { [K in keyof T]: T[K] extends (...args: any[]) => any ? K : never }[keyof T] &
     string;

@@ -9,7 +9,7 @@
   "author": "witooh <witoo@plimble.com>",
   "license": "MIT",
   "scripts": {
-    "build": "nx run-many --all --target=build",
+    "build": "rm -rf dist && nx run-many --all --target=build",
     "deploy:patch": "yarn build && nx run-many --all --target=version --releaseAs=patch",
     "deploy:minor": "yarn build && nx run-many --all --target=version --releaseAs=minor",
     "deploy:major": "yarn build && nx run-many --all --target=version --releaseAs=major"
