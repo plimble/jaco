@@ -1,0 +1,29 @@
+{
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "npmScope": "onedaycat",
+  "affected": {
+    "defaultBase": "main"
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/node",
+    "generators": {
+      "@nrwl/node:library": {
+        "publishable": true
+      }
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "test",
+          "e2e"
+        ],
+        "accessToken": "OGQ0NGVjNTUtZTNmNy00Y2MyLWI0M2QtYzE4YTMzNTYxYTNlfHJlYWQtd3JpdGU="
+      }
+    }
+  }
+}

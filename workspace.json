@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "projects": {
+    "common": "packages/common",
+    "core": "packages/core",
+    "http": "packages/http",
+    "testing": "packages/testing"
+  }
+}
