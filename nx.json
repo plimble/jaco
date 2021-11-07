@@ -12,6 +12,13 @@
       }
     }
   },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*"
+    },
+    "tsconfig.base.json": "*",
+    ".eslintrc.json": "*"
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
