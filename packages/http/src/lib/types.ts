@@ -1,5 +1,4 @@
 export interface HttpRequestOptions {
-    http?: boolean
     maxRetry?: number
     delayRetry?: number
     timeout?: number

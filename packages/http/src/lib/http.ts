@@ -18,14 +18,12 @@ export class HttpClient {
     private readonly maxRetry: number
     private readonly delayRetry: number
     private readonly timeout: number
-    private readonly agent: any
 
     constructor(options?: HttpRequestOptions) {
         this.controller = new AbortController()
         this.timeout = options?.timeout ?? 30000
         this.maxRetry = options?.maxRetry ?? 5
         this.delayRetry = options?.delayRetry ?? 100
-        this.agent = options?.http ? httpAgent : httpsAgent
     }
 
     async request(req: HttpsRequestPayload): Promise<HttpsResponse> {
@@ -54,7 +52,13 @@ export class HttpClient {
                     method: req.method,
                     body: req.body,
                     signal: this.controller.signal,
-                    agent: this.agent,
+                    agent: function (_parsedURL) {
+                        if (_parsedURL.protocol == 'http:') {
+                            return httpAgent
+                        } else {
+                            return httpsAgent
+                        }
+                    },
                 })
 
                 if (res.status === 502 || res.status === 408) {
