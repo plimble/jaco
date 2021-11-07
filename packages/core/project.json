@@ -42,7 +42,9 @@
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": "core:deploy",
+        "postTargets": [
+          "core:deploy"
+        ],
         "skipRootChangelog": true,
         "skipProjectChangelog": true
       }
