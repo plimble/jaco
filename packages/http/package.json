@@ -1,5 +1,6 @@
 {
   "name": "@onedaycat/jaco-http",
-  "version": "0.0.5",
-  "repository": "git@github.com:onedaycat/jaco.git"
+  "version": "0.0.6",
+  "repository": "git@github.com:onedaycat/jaco.git",
+  "type": "module"
 }
