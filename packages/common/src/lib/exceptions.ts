@@ -1,4 +1,4 @@
-import {Constructor} from './types.d.ts'
+import {Constructor} from './types'
 
 export enum Exceptions {
     NOT_FOUND = 'NotFound',

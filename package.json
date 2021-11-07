@@ -9,10 +9,10 @@
   "author": "witooh <witoo@plimble.com>",
   "license": "MIT",
   "scripts": {
-    "build": "nx affected:build",
-    "deploy:patch": "nx affected --target=version --releaseAs=patch",
-    "deploy:minor": "nx affected --target=version --releaseAs=minor",
-    "deploy:major": "nx affected --target=version --releaseAs=major"
+    "build": "nx run-many --all --target=build",
+    "deploy:patch": "yarn build && nx run-many --all --target=version --releaseAs=patch",
+    "deploy:minor": "yarn build && nx run-many --all --target=version --releaseAs=minor",
+    "deploy:major": "yarn build && nx run-many --all --target=version --releaseAs=major"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
