@@ -10,9 +10,9 @@
   "license": "MIT",
   "scripts": {
     "build": "nx affected:build",
-    "deploy:patch": "nx affected --target=version --releaseAs=patch",
-    "deploy:minor": "nx affected --target=version --releaseAs=minor",
-    "deploy:major": "nx affected --target=version --releaseAs=major"
+    "deploy:patch": "nx affected --target=version --push --releaseAs=patch",
+    "deploy:minor": "nx affected --target=version --push --releaseAs=minor",
+    "deploy:major": "nx affected --target=version --push --releaseAs=major"
   },
   "dependencies": {
     "cuid": "^2.1.8",
