@@ -3,6 +3,7 @@ import https from 'https'
 import http from 'http'
 import fetch, {AbortError} from 'node-fetch'
 import type {HttpRequestOptions, HttpsRequestPayload, HttpsResponse} from './types'
+import {AbortController} from 'abort-controller'
 
 const httpAgent = new http.Agent({
     keepAlive: true,
@@ -62,12 +63,17 @@ export class HttpClient {
                 }
 
                 const resBody = await res.buffer()
+                const resHeaders: Record<string, string> = {}
+                for (const [key, value] of res.headers.entries()) {
+                    resHeaders[key] = value
+                }
 
                 return {
                     req,
                     body: resBody,
                     isError: !res.ok,
                     status: res.status,
+                    headers: resHeaders,
                 }
             } catch (e: any) {
                 if (e instanceof AbortError) {

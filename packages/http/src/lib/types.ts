@@ -21,4 +21,5 @@ export interface HttpsResponse {
     body: Buffer
     req: HttpsRequestPayload
     status: number
+    headers: Record<string, string>
 }
