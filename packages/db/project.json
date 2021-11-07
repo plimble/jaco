@@ -1,6 +1,6 @@
 {
-  "root": "packages/http",
-  "sourceRoot": "packages/http/src",
+  "root": "packages/db",
+  "sourceRoot": "packages/db/src",
   "projectType": "library",
   "targets": {
     "lint": {
@@ -10,17 +10,17 @@
       ],
       "options": {
         "lintFilePatterns": [
-          "packages/http/**/*.ts"
+          "packages/db/**/*.ts"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": [
-        "coverage/packages/http"
+        "coverage/packages/db"
       ],
       "options": {
-        "jestConfig": "packages/http/jest.config.js",
+        "jestConfig": "packages/db/jest.config.js",
         "passWithNoTests": true
       }
     },
@@ -30,19 +30,19 @@
         "{options.outputPath}"
       ],
       "options": {
-        "outputPath": "dist/packages/http",
-        "tsConfig": "packages/http/tsconfig.lib.json",
-        "packageJson": "packages/http/package.json",
-        "main": "packages/http/src/index.ts",
+        "outputPath": "dist/packages/db",
+        "tsConfig": "packages/db/tsconfig.lib.json",
+        "packageJson": "packages/db/package.json",
+        "main": "packages/db/src/index.ts",
         "assets": [
-          "packages/http/*.md"
+          "packages/db/*.md"
         ]
       }
     },
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": "http:deploy",
+        "postTargets": "db:deploy",
         "skipRootChangelog": true,
         "skipProjectChangelog": true
       }

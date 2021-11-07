@@ -39,11 +39,18 @@
         ]
       }
     },
-    "publish": {
-      "executor": "@nrwl/workspace:run-commands",
+    "version": {
+      "executor": "@jscutlery/semver:version",
       "options": {
-        "command": "yarn publish",
-        "cwd": "dist/packages/common"
+        "postTargets": "common:deploy",
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
       }
     }
   },

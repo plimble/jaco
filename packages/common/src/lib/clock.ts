@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {InternalErrorException} from './exceptions'
+import {ExceptionCode, HttpException} from './exceptions'
 
 dayjs.extend(utc)
 
@@ -39,7 +39,7 @@ export class Clock {
     static parse(dateTime: string, format: string | undefined = undefined): number {
         const date = dayjs(dateTime, format)
         if (!date.isValid()) {
-            throw new InternalErrorException('Invalid date time format')
+            throw HttpException.fromCode(ExceptionCode.InternalError, 'Invalid date time format')
         }
 
         return date.utc().unix()
@@ -65,19 +65,36 @@ export class Clock {
         return afterTs - beforeTs
     }
 
-    static diffDateIn(beforeTs: number, afterTs: number, type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'): number {
+    static diffDateIn(
+        beforeTs: number,
+        afterTs: number,
+        type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
+    ): number {
         return dayjs.utc(afterTs * 1000).diff(dayjs.utc(beforeTs * 1000), type)
     }
 
-    static add(timestamp: number, duration: number, type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'): number {
+    static add(
+        timestamp: number,
+        duration: number,
+        type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
+    ): number {
         return dayjs.utc(timestamp * 1000).add(duration, type).unix()
     }
 
-    static sub(timestamp: number, duration: number, type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second'): number {
+    static sub(
+        timestamp: number,
+        duration: number,
+        type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
+    ): number {
         return dayjs.utc(timestamp * 1000).subtract(duration, type).unix()
     }
 
-    static set(timestamp: number, duration: number, type: 'year' | 'month' | 'date' | 'hour' | 'minute' | 'second', offset = 0): number {
+    static set(
+        timestamp: number,
+        duration: number,
+        type: 'year' | 'month' | 'date' | 'hour' | 'minute' | 'second',
+        offset = 0,
+    ): number {
         if (type === 'month') {
             return dayjs.utc(timestamp * 1000).utcOffset(offset).set(type, duration - 1).unix()
         }
@@ -113,10 +130,12 @@ export class Clock {
         const rangeSec = secType * range
 
         if (diffSec <= rangeSec) {
-            return [{
-                from: start,
-                to: to,
-            }]
+            return [
+                {
+                    from: start,
+                    to: to,
+                },
+            ]
         }
 
         const count = Math.ceil(diffSec / rangeSec)

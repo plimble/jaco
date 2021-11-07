@@ -20,13 +20,29 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "baseUrl": ".",
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "paths": {
-      "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
-      "@onedaycat/jaco-core": ["packages/core/src/index.ts"],
-      "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
-      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"]
+      "@onedaycat/jaco-common": [
+        "packages/common/src/index.ts"
+      ],
+      "@onedaycat/jaco": [
+        "packages/core/src/index.ts"
+      ],
+      "@onedaycat/jaco-db": [
+        "packages/db/src/index.ts"
+      ],
+      "@onedaycat/jaco-http": [
+        "packages/http/src/index.ts"
+      ],
+      "@onedaycat/jaco-testing": [
+        "packages/testing/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

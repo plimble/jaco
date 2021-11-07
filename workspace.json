@@ -3,6 +3,7 @@
   "projects": {
     "common": "packages/common",
     "core": "packages/core",
+    "db": "packages/db",
     "http": "packages/http",
     "testing": "packages/testing"
   }
