@@ -15,6 +15,7 @@
     "deploy:major": "nx affected --target=version --releaseAs=major"
   },
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "cuid": "^2.1.8",
     "dayjs": "^1.10.7",
     "fast-copy": "^2.1.1",
