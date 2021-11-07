@@ -8,4 +8,10 @@ describe('Http', () => {
 
         expect(res.status).toEqual(200)
     })
+
+    test.skip('google timeout', async () => {
+        const res = await client.request({url: 'https://google.com', method: 'GET', path: '/', timeout: 10})
+
+        expect(res.status).toEqual(200)
+    })
 })

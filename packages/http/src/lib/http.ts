@@ -1,7 +1,7 @@
 import {HttpsClientException} from './error'
 import https from 'https'
 import http from 'http'
-import fetch, {AbortError} from 'node-fetch'
+import fetch from 'node-fetch'
 import type {HttpRequestOptions, HttpsRequestPayload, HttpsResponse} from './types'
 import {AbortController} from 'abort-controller'
 
@@ -14,13 +14,11 @@ const httpsAgent = new https.Agent({
 })
 
 export class HttpClient {
-    private readonly controller: AbortController
     private readonly maxRetry: number
     private readonly delayRetry: number
     private readonly timeout: number
 
     constructor(options?: HttpRequestOptions) {
-        this.controller = new AbortController()
         this.timeout = options?.timeout ?? 30000
         this.maxRetry = options?.maxRetry ?? 5
         this.delayRetry = options?.delayRetry ?? 100
@@ -36,22 +34,20 @@ export class HttpClient {
 
         return await this.send(url, req)
     }
-
-    private timeoutSignal(timeout?: number): void {
-        setTimeout(() => {
-            this.controller.abort()
-        }, timeout ?? this.timeout)
-    };
-
+    
     private async send(url: string, req: HttpsRequestPayload): Promise<HttpsResponse> {
         for (let i = 0; i < this.maxRetry; i++) {
+            const controller = new AbortController()
+            const timeout = setTimeout(() => {
+                controller.abort()
+            }, req.timeout ?? this.timeout)
+
             try {
-                this.timeoutSignal(req.timeout)
                 const res = await fetch(url, {
                     headers: req.headers,
                     method: req.method,
                     body: req.body,
-                    signal: this.controller.signal,
+                    signal: controller.signal,
                     agent: function (_parsedURL) {
                         if (_parsedURL.protocol == 'http:') {
                             return httpAgent
@@ -80,13 +76,15 @@ export class HttpClient {
                     headers: resHeaders,
                 }
             } catch (e: any) {
-                if (e instanceof AbortError) {
+                if (e.name === 'AbortError') {
                     await this.sleep(this.delayRetry)
                 } else if (e.code === 'ETIMEDOUT' || e.code === 'ECONNRESET' || e.code === 'EPIPE' || e.message === 'Timeout reached') {
                     await this.sleep(this.delayRetry)
                 } else {
                     throw new HttpsClientException(e.message, req)
                 }
+            } finally {
+                clearTimeout(timeout)
             }
         }
 
