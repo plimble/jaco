@@ -1,5 +1,3 @@
-import {Constructor} from './types'
-
 export enum Exceptions {
     NOT_FOUND = 'NotFound',
     BAD_REQUEST = 'BadRequest',
@@ -28,10 +26,10 @@ export interface HttpExceptionPayload {
     cause?: HttpExceptionPayload
 }
 
-export interface HttpExceptionInput {
+export interface HttpExceptionInfo {
     status: number
     code: string
-    msg: string
+    msg?: string
 }
 
 export enum ExceptionCode {
@@ -45,10 +43,8 @@ export enum ExceptionCode {
     InternalError = 'InternalError',
 }
 
-export type HttpExceptionInfo = Record<string, HttpExceptionInput>
-
 export class HttpException extends Error {
-    static create(input: HttpExceptionInput): HttpException {
+    static create(input: HttpExceptionInfo): HttpException {
         let type: Exceptions = Exceptions.INTERNAL_ERROR
         switch (input.status) {
             case 400:
@@ -119,6 +115,16 @@ export class HttpException extends Error {
         return this.errorCause
     }
 
+    rootCause(): HttpException {
+        const cause = this.errorCause
+
+        if (cause) {
+            return cause.rootCause()
+        }
+
+        return this
+    }
+
     withInput(input: any): HttpException {
         this.errorInput = input
         return this
@@ -134,9 +140,13 @@ export class HttpException extends Error {
         return this
     }
 
-    hasError(err: Constructor<HttpException>): boolean {
+    is(input: HttpException | HttpExceptionInfo): boolean {
+        return this.status === input.status && this.code === input.code
+    }
+
+    hasError(err: HttpException | HttpExceptionInfo): boolean {
         const cause = this.errorCause
-        if (this instanceof err) {
+        if (this.code === err.code) {
             return true
         }
 
@@ -170,6 +180,14 @@ export class HttpException extends Error {
     }
 }
 
+export function isException(e: any, code?: string): e is HttpException {
+    if (e instanceof HttpException) {
+        return !(code && e.code !== code)
+    }
+
+    return false
+}
+
 export function wrapError(e: any): HttpException {
     switch (true) {
         case e instanceof HttpException:
@@ -188,4 +206,8 @@ export function wrapError(e: any): HttpException {
         default:
             return HttpException.fromCode(ExceptionCode.InternalError, e.toString ? e.toString() : 'Unknown Error')
     }
+}
+
+export function exceptions<T extends Record<string, HttpExceptionInfo>>(exps: T): Record<keyof T, HttpExceptionInfo> {
+    return exps
 }

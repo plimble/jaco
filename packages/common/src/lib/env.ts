@@ -1,13 +1,14 @@
-export type EnvConfig = Record<string, any>
-
-export function loadEnv<T extends Record<string, string>>(prefix: string): T {
-    const result: Record<string, string> = {}
-    const startPrefix = `${prefix}_`
-    for (const [name, value] of Object.entries(process.env)) {
-        if (name.startsWith(startPrefix)) {
-            result[name.replace(startPrefix, '')] = value ?? ''
+export abstract class Env {
+    loadEnv(prefix: string): void {
+        const startPrefix = `${prefix}_`
+        for (const name of Object.keys(this)) {
+            this[name] = process.env[startPrefix + name] ?? ''
         }
     }
 
-    return result as T
+    override(obj: Partial<Record<keyof this, string>>): void {
+        for (const [name, value] of Object.entries(obj)) {
+            this[name] = value
+        }
+    }
 }

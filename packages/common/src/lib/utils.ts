@@ -44,3 +44,8 @@ export function listToRecord<T>(arr: T[], keyFn: (data: T) => string): Record<st
     return result
 }
 
+const regEx = /[`~!@#$%^&*()_|+\-=?;:'",.<>{}[\]\\/]/g
+
+export function removeSpecialChar(str: string) {
+    return str.replace(regEx, ' ').split(' ').filter(Boolean).join(' ')
+}
