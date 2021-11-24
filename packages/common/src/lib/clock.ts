@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {ExceptionCode, HttpException} from './exceptions'
+import {InternalError} from './app-error'
 
 dayjs.extend(utc)
 
@@ -14,18 +14,29 @@ export class Clock {
         const date = new Date(timestamp * 1000)
 
         if (omitTime) {
-            return date.getUTCFullYear().toString() +
-                '-' + Clock.pad(date.getUTCMonth() + 1) +
-                '-' + Clock.pad(date.getUTCDate())
+            return (
+                date.getUTCFullYear().toString() +
+                '-' +
+                Clock.pad(date.getUTCMonth() + 1) +
+                '-' +
+                Clock.pad(date.getUTCDate())
+            )
         }
 
-        return date.getUTCFullYear().toString() +
-            '-' + Clock.pad(date.getUTCMonth() + 1) +
-            '-' + Clock.pad(date.getUTCDate()) +
-            'T' + Clock.pad(date.getUTCHours()) +
-            ':' + Clock.pad(date.getUTCMinutes()) +
-            ':' + Clock.pad(date.getUTCSeconds()) +
+        return (
+            date.getUTCFullYear().toString() +
+            '-' +
+            Clock.pad(date.getUTCMonth() + 1) +
+            '-' +
+            Clock.pad(date.getUTCDate()) +
+            'T' +
+            Clock.pad(date.getUTCHours()) +
+            ':' +
+            Clock.pad(date.getUTCMinutes()) +
+            ':' +
+            Clock.pad(date.getUTCSeconds()) +
             'Z'
+        )
     }
 
     static format(timestamp: number, formatStr: string | undefined = undefined, timezone = 0): string {
@@ -33,13 +44,16 @@ export class Clock {
             return dayjs.utc(timestamp * 1000).format(formatStr)
         }
 
-        return dayjs.utc(timestamp * 1000).utcOffset(timezone).format(formatStr)
+        return dayjs
+            .utc(timestamp * 1000)
+            .utcOffset(timezone)
+            .format(formatStr)
     }
 
     static parse(dateTime: string, format: string | undefined = undefined): number {
         const date = dayjs(dateTime, format)
         if (!date.isValid()) {
-            throw HttpException.fromCode(ExceptionCode.InternalError, 'Invalid date time format')
+            throw new InternalError('Invalid date time format')
         }
 
         return date.utc().unix()
@@ -78,7 +92,10 @@ export class Clock {
         duration: number,
         type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
     ): number {
-        return dayjs.utc(timestamp * 1000).add(duration, type).unix()
+        return dayjs
+            .utc(timestamp * 1000)
+            .add(duration, type)
+            .unix()
     }
 
     static sub(
@@ -86,7 +103,10 @@ export class Clock {
         duration: number,
         type: 'year' | 'month' | 'day' | 'hour' | 'minute' | 'second',
     ): number {
-        return dayjs.utc(timestamp * 1000).subtract(duration, type).unix()
+        return dayjs
+            .utc(timestamp * 1000)
+            .subtract(duration, type)
+            .unix()
     }
 
     static set(
@@ -96,34 +116,53 @@ export class Clock {
         offset = 0,
     ): number {
         if (type === 'month') {
-            return dayjs.utc(timestamp * 1000).utcOffset(offset).set(type, duration - 1).unix()
+            return dayjs
+                .utc(timestamp * 1000)
+                .utcOffset(offset)
+                .set(type, duration - 1)
+                .unix()
         }
 
-        return dayjs.utc(timestamp * 1000).utcOffset(offset).set(type, duration).unix()
+        return dayjs
+            .utc(timestamp * 1000)
+            .utcOffset(offset)
+            .set(type, duration)
+            .unix()
     }
 
     static get(timestamp: number, type: 'year' | 'month' | 'date' | 'hour' | 'minute' | 'second', offset = 0): number {
         if (type === 'month') {
-            return dayjs.utc(timestamp * 1000).utcOffset(offset).get(type) + 1
+            return (
+                dayjs
+                    .utc(timestamp * 1000)
+                    .utcOffset(offset)
+                    .get(type) + 1
+            )
         }
 
-        return dayjs.utc(timestamp * 1000).utcOffset(offset).get(type)
+        return dayjs
+            .utc(timestamp * 1000)
+            .utcOffset(offset)
+            .get(type)
     }
 
     static startOf(timestamp: number, type: 'day' | 'month' | 'week' | 'year', offset: number): number {
-        return dayjs.utc(timestamp * 1000).utcOffset(offset).startOf(type).unix()
+        return dayjs
+            .utc(timestamp * 1000)
+            .utcOffset(offset)
+            .startOf(type)
+            .unix()
     }
 
     static endOf(timestamp: number, type: 'day' | 'month' | 'week' | 'year', offset: number): number {
-        return dayjs.utc(timestamp * 1000).utcOffset(offset).endOf(type).unix()
+        return dayjs
+            .utc(timestamp * 1000)
+            .utcOffset(offset)
+            .endOf(type)
+            .unix()
     }
 
-    static splitTime(
-        start: number,
-        to: number,
-        range: number,
-        type: 'day' | 'hr' | 'min' | 'sec',
-    ): RangeFromTo[] {
+    static splitTime(start: number, to: number, range: number, type: 'day' | 'hr' | 'min' | 'sec'): RangeFromTo[] {
         const diffSec = Clock.diffDate(start, to)
 
         const secType = Clock.getSecFromType(type)
@@ -144,7 +183,7 @@ export class Clock {
 
         let lastTo = to
         for (let i = 1; i <= count; i++) {
-            const from = to - (rangeSec * i)
+            const from = to - rangeSec * i
             result.push({
                 from: from,
                 to: lastTo,
@@ -163,7 +202,7 @@ export class Clock {
 
     private static freezeDate: number | undefined
 
-    private static getSecFromType(type: | 'day' | 'hr' | 'min' | 'sec'): number {
+    private static getSecFromType(type: 'day' | 'hr' | 'min' | 'sec'): number {
         switch (type) {
             case 'day':
                 return 86400

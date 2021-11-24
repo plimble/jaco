@@ -1,6 +1,6 @@
 export * from './lib/clock'
 export * from './lib/env'
-export * from './lib/exceptions'
+export * from './lib/app-error'
 export * from './lib/idgen'
 export * from './lib/merge'
 export * from './lib/types'
