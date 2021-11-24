@@ -1,4 +1,4 @@
-import {AppError, registerError} from '../lib/app-error'
+import {AppError, isError, registerError} from '../lib/app-error'
 
 describe('AppError', () => {
     const errs = registerError({
@@ -39,6 +39,28 @@ describe('AppError', () => {
             const err2 = new AppError(errs.e1)
             expect(err.is(err2)).toBeTruthy()
             expect(err.is(errs.e1)).toBeTruthy()
+        })
+    })
+
+    describe('isError', () => {
+        class CustomError extends Error {
+            constructor(name: string, message: string) {
+                super(message)
+                this.name = name
+            }
+        }
+
+        test('isError', () => {
+            const err = new AppError(errs.e1)
+            expect(isError(err, errs.e1)).toBeTruthy()
+            expect(isError(err, 'e1')).toBeTruthy()
+            expect(isError(err, errs.e2)).toBeFalsy()
+
+            const customErr = new CustomError('e1', 'e1')
+            expect(isError(customErr, errs.e1)).toBeTruthy()
+            expect(isError(customErr, 'e1')).toBeTruthy()
+            expect(isError(customErr, errs.e2)).toBeFalsy()
+            expect(isError(customErr, 'CustomError')).toBeFalsy()
         })
     })
 })

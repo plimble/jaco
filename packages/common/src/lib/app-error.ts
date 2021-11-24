@@ -43,10 +43,12 @@ export class AppError extends Error {
     constructor(status: AppErrorInfo | number, code?: string, message?: string) {
         if (typeof status === 'number') {
             super(message)
+            this.name = code as string
             this.code = code as string
             this.status = status as number
         } else {
             super(status.msg)
+            this.name = status.code
             this.code = status.code
             this.status = status.status
         }
@@ -173,6 +175,19 @@ export class InternalError extends AppError {
     constructor(msg?: string) {
         super(500, 'InternalError', msg ?? 'Internal error')
     }
+}
+
+export function isError(e: any, code: string | AppErrorInfo): boolean {
+    const appCode = typeof code === 'string' ? code : code.code
+    if (e instanceof AppError) {
+        return e.is(appCode)
+    }
+
+    if (e instanceof Error) {
+        return e.name === appCode
+    }
+
+    return false
 }
 
 export function wrapError(e: any): AppError {
