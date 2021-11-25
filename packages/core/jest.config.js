@@ -6,13 +6,11 @@ module.exports = {
             tsconfig: '<rootDir>/tsconfig.spec.json',
         },
     },
+    setupFiles: ['reflect-metadata'],
     testEnvironment: 'node',
     transform: {
         '^.+\\.[tj]sx?$': 'ts-jest',
     },
-    setupFiles: [
-        "reflect-metadata"
-    ],
     moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
     coverageDirectory: '../../coverage/packages/core',
-};
+}

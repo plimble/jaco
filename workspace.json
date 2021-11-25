@@ -4,7 +4,10 @@
     "common": "packages/common",
     "core": "packages/core",
     "db": "packages/db",
+    "domain": "packages/domain",
     "http": "packages/http",
+    "sagas": "packages/sagas",
+    "sentry": "packages/sentry",
     "testing": "packages/testing"
   }
 }

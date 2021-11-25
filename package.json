@@ -25,7 +25,8 @@
     "reflect-metadata": "^0.1.13",
     "tslib": "^2.3.1",
     "tsyringe": "^4.6.0",
-    "url-router": "^13.0.0"
+    "url-router": "^13.0.0",
+    "@sentry/node": "^6.15.0"
   },
   "devDependencies": {
     "@jscutlery/semver": "^2.13.0",

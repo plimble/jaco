@@ -20,18 +20,6 @@ export interface AppErrorInfo {
     msg: string
 }
 
-const errorRegistered: Record<string, AppErrorInfo> = {}
-
-// export const ValidateError = (code?: string) =>
-//     AppError.create(400, code ?? 'ValidateError', 'Input value is not valid')
-// export const MethodNotFound = (code?: string) => AppError.create(404, code ?? 'MethodNotFound', 'Method not found')
-// export const Maintenance = (code?: string) => AppError.create(503, code ?? 'Maintenance', 'maintenance')
-// export const PermissionDenied = (code?: string) => AppError.create(403, code ?? 'PermissionDenied', 'Permission denied')
-// export const NotImplemented = (code?: string) => AppError.create(503, code ?? 'NotImplemented', 'Not implemented')
-// export const Unauthorized = (code?: string) => AppError.create(401, code ?? 'Unauthorized', 'Request is not authorized')
-// export const TimeoutError = (code?: string) => AppError.create(408, code ?? 'TimeoutError', 'Request timeout')
-// export const InternalError = (code?: string) => AppError.create(500, code ?? 'InternalError', 'Internal error')
-
 export class AppError extends Error {
     readonly code: string
     readonly status: number
@@ -206,6 +194,7 @@ export function wrapError(e: any): AppError {
 }
 
 export function registerError<T extends Record<string, [number, string]>>(errInfos: T): Record<keyof T, AppErrorInfo> {
+    const errorRegistered: Record<string, AppErrorInfo> = {}
     for (const [code, errInfo] of Object.entries(errInfos)) {
         errorRegistered[code] = {status: errInfo[0], msg: errInfo[1], code}
     }

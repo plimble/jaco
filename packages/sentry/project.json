@@ -1,20 +1,20 @@
 {
-  "root": "packages/http",
-  "sourceRoot": "packages/http/src",
+  "root": "packages/sentry",
+  "sourceRoot": "packages/sentry/src",
   "projectType": "library",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/http/**/*.ts"]
+        "lintFilePatterns": ["packages/sentry/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/http"],
+      "outputs": ["coverage/packages/sentry"],
       "options": {
-        "jestConfig": "packages/http/jest.config.js",
+        "jestConfig": "packages/sentry/jest.config.js",
         "passWithNoTests": true
       }
     },
@@ -22,17 +22,17 @@
       "executor": "@nrwl/node:package",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/http",
-        "tsConfig": "packages/http/tsconfig.lib.json",
-        "packageJson": "packages/http/package.json",
-        "main": "packages/http/src/index.ts",
-        "assets": ["packages/http/*.md"]
+        "outputPath": "dist/packages/sentry",
+        "tsConfig": "packages/sentry/tsconfig.lib.json",
+        "packageJson": "packages/sentry/package.json",
+        "main": "packages/sentry/src/index.ts",
+        "assets": ["packages/sentry/*.md"]
       }
     },
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": ["http:deploy"],
+        "postTargets": ["sentry:deploy"],
         "skipRootChangelog": true,
         "skipProjectChangelog": true
       }
