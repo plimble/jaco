@@ -57,10 +57,20 @@ describe('AppError', () => {
             expect(isError(err, errs.e2)).toBeFalsy()
 
             const customErr = new CustomError('e1', 'e1')
-            expect(isError(customErr, errs.e1)).toBeTruthy()
-            expect(isError(customErr, 'e1')).toBeTruthy()
+            expect(isError(customErr, errs.e1)).toBeFalsy()
+            expect(isError(customErr, 'e1')).toBeFalsy()
             expect(isError(customErr, errs.e2)).toBeFalsy()
             expect(isError(customErr, 'CustomError')).toBeFalsy()
+        })
+    })
+
+    describe('instanceof from AppErrorInfo', () => {
+        test('isError', () => {
+            const err = new AppError(errs.e1)
+            expect(err).toBeInstanceOf(AppError)
+            expect(err).toBeInstanceOf(Error)
+            expect(err.is(errs.e1)).toBeTruthy()
+            expect(err.is(errs.e2)).toBeFalsy()
         })
     })
 })

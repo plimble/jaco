@@ -183,10 +183,6 @@ export function isError(e: any, code: string | AppErrorInfo): boolean {
         return e.is(appCode)
     }
 
-    if (e instanceof Error) {
-        return e.name === appCode
-    }
-
     return false
 }
 
