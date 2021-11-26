@@ -1,7 +1,9 @@
 import Route from 'url-router'
+import {Constructor} from '@onedaycat/jaco-common'
 import {Controller} from './controller'
 
-export type ImportPromise = () => Promise<Controller>
+export type ImportPromise = () => Promise<Constructor<Controller>>
+export type ResourceFn = (r: Router) => void
 export type RouteResult<T> = {
     handler: T
     params: Record<string, string>
@@ -22,13 +24,11 @@ export class Router {
         } else {
             this.name = name
         }
-
-        this.route = new Route()
     }
 
-    resource(name: string, r: (Router) => void): this {
+    resource(name: string, fn: ResourceFn): this {
         const router = new Router(this.route, `${this.name}/${name}`)
-        r(router)
+        fn(router)
 
         return this
     }

@@ -26,5 +26,5 @@ export abstract class Controller {
         return await this.handle(payload.body, context)
     }
 
-    abstract handle(body: any, context: Context): Promise<ApiResponse<any>>
+    abstract handle(body: any, context: Context): Promise<ApiResponse>
 }

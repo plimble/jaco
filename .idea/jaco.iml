@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$/packages/http/src/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/packages/common/src/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/packages/core/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />

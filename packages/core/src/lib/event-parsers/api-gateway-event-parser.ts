@@ -15,7 +15,7 @@ export interface ApiPayload<T = any> {
     readonly body: T
     readonly headers?: HttpHeaders
     readonly authorizer?: Authorizer
-    readonly method: string
+    readonly method: 'GET' | 'POST' | 'DELETE' | 'PUT' | 'PATCH'
     readonly path: string
     readonly rawBody?: string
 }
@@ -70,7 +70,7 @@ export class ApiGatewayEventParser implements EventParser {
                 headers: event.headers as HttpHeaders,
                 body: body,
                 authorizer: auuthorizer,
-                method: event.requestContext.http.method,
+                method: event.requestContext.http.method as any,
                 path: event.requestContext.http.path,
                 rawBody: event.body,
             }

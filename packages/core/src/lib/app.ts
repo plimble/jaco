@@ -63,7 +63,7 @@ export class App {
         this.errorHandlers.push(...errorHandlers)
     }
 
-    async invoke<T>(req: Req): Promise<T> {
+    async invoke<T>(req: Req<T>): Promise<T> {
         const context = new Context()
         if (req.raw) {
             try {

@@ -17,7 +17,8 @@ export class RouterHandler implements Handler {
             payload.body[param] = val
         }
 
-        const ctrl = await result.handler()
+        const ctrlClass = await result.handler()
+        const ctrl = context.getContainer().resolve(ctrlClass)
 
         return await ctrl.run(payload, context)
     }
