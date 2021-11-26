@@ -1,10 +1,22 @@
 import {KinesisStreamEvent, SNSEvent, SQSEvent} from 'aws-lambda'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 import {DomainEvent, DomainEventPayload} from './domain-event'
 
 @Singleton()
 export class DomainEventParser {
-    parse(input: any): DomainEvent[] {
+    onParseRequestError(err: AppError): void {
+        throw err
+    }
+
+    parseResponse(payload: any): void {
+        return payload
+    }
+
+    parseErrorResponse(err: AppError): void {
+        throw err
+    }
+
+    parseRequest(input: any): DomainEvent[] {
         // Kinesis
         if (input.Records && input.Records.length && input.Records[0].kinesis) {
             return this.parseKiesis(input)

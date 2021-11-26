@@ -15,7 +15,6 @@ export interface SentryServiceOptions {
 
 export interface SentryPayload {
     functionName: string
-    requestId?: string
     error: AppError
     requestPayload?: string
     user?: {
@@ -48,9 +47,6 @@ export class SentryService {
             scope.setTag('service', payload.functionName)
             scope.setTag('environment', this.env)
             scope.setTag('release', this.release)
-            if (payload.requestId) {
-                scope.setTag('request_id', payload.requestId)
-            }
             if (payload.requestPayload) {
                 scope.setExtra('request', payload.requestPayload)
             }
