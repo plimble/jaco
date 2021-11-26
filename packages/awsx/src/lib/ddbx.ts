@@ -11,7 +11,7 @@ import DynamoDB, {
 import {JSONObject} from './json-object'
 import {DynamoDBCursor} from './ddbx.cursor'
 import {chunkArray, InternalError, Singleton} from '@onedaycat/jaco-common'
-import {TransactionCanceled} from '../errors'
+import {TransactionCanceled} from './errors'
 
 @Singleton()
 export class DynamoDBx {

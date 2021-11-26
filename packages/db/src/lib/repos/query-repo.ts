@@ -1,5 +1,4 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
-import {DynamoDBx, ScanPageOutput} from '../services/ddbx'
 import {
     CustomFields,
     DDBDeleteKey,
@@ -21,6 +20,7 @@ import {
     ScanOutput,
 } from './interfaces'
 import {Clock, InternalError} from '@onedaycat/jaco-common'
+import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 
 export abstract class QueryRepo<T extends Model> {
     protected modelType: string

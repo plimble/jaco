@@ -1,6 +1,6 @@
 import {Aggregate, AggregatePayload, AggregateState} from '@onedaycat/jaco-domain'
-import {DynamoDBx} from '../services/ddbx'
 import {ExpressionAttributeNameMap, ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
+import {DynamoDBx} from '@onedaycat/jaco-awsx'
 
 export type IndexMapper<T extends Model> = (agg: T) => IndexData
 export type CustomFields<T extends Model> = (agg: T) => CustomData

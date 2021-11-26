@@ -1,6 +1,7 @@
 {
   "version": 2,
   "projects": {
+    "awsx": "packages/awsx",
     "common": "packages/common",
     "core": "packages/core",
     "db": "packages/db",

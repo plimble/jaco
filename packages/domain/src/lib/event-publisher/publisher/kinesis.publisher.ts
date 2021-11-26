@@ -1,8 +1,8 @@
 import {KinesisTarget, Publisher} from '../interfaces'
 import {DomainEvent} from '../../domain-event'
-import {Kinesisx} from '../../services/kinesisx'
 import Kinesis from 'aws-sdk/clients/kinesis'
 import {chunkArray, Singleton} from '@onedaycat/jaco-common'
+import {Kinesisx} from '@onedaycat/jaco-awsx'
 
 @Singleton()
 export class KinesisPublisher implements Publisher {

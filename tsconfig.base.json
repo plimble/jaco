@@ -22,14 +22,15 @@
     "baseUrl": ".",
     "types": ["node"],
     "paths": {
+      "@onedaycat/jaco-awsx": ["packages/awsx/src/index.ts"],
       "@onedaycat/jaco": ["packages/core/src/index.ts"],
       "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
       "@onedaycat/jaco-db": ["packages/db/src/index.ts"],
       "@onedaycat/jaco-domain": ["packages/domain/src/index.ts"],
       "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
       "@onedaycat/jaco-sagas": ["packages/sagas/src/index.ts"],
-      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"],
-      "@onedaycat/jaco-sentry": ["packages/sentry/src/index.ts"]
+      "@onedaycat/jaco-sentry": ["packages/sentry/src/index.ts"],
+      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,6 +1,5 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
 import {Aggregate, AggregatePayload, EventPublisher} from '@onedaycat/jaco-domain'
-import {DynamoDBx, ScanPageOutput} from '../services/ddbx'
 import {
     AggregateRepoOptions,
     AggregateStoreCreateFactory,
@@ -22,6 +21,7 @@ import {
 } from './interfaces'
 import {container} from 'tsyringe'
 import {Clock, InternalError, wrapError} from '@onedaycat/jaco-common'
+import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 
 export abstract class AggregateRepo<T extends Aggregate<any>> {
     protected aggregateType: string

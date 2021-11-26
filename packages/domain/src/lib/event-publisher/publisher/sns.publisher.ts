@@ -1,7 +1,7 @@
 import {Publisher, SNSTarget} from '../interfaces'
 import {DomainEvent} from '../../domain-event'
-import {SNSX} from '../../services/snsx'
 import {Singleton} from '@onedaycat/jaco-common'
+import {SNSX} from '@onedaycat/jaco-awsx'
 
 const eventTypeKey = 'event'
 const snsStringDataType = 'String'
