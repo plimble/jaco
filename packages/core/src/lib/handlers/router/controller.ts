@@ -1,30 +1,59 @@
+import 'reflect-metadata'
 import {PermissionDenied, ValidateError} from '@onedaycat/jaco-common'
-import Joi from 'joi'
 import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Guard} from './guard'
+import {plainToClass} from 'class-transformer'
+import {validate} from 'class-validator'
+
+export {JSONSchema as Info} from 'class-validator-jsonschema'
+
+export interface ApiInfo {
+    input?: any
+    output: any
+    security?: any
+    guard?: any
+    description?: string
+}
+
+const CTRL_KEY = Symbol('jaco:ctrl')
+
+export function Api(info: ApiInfo): (target: any) => any {
+    return function (target: any): any {
+        Reflect.defineMetadata(CTRL_KEY, info, target)
+
+        return target
+    }
+}
 
 export abstract class Controller {
-    protected validate?: Joi.ObjectSchema
-    protected guard?: Guard
-
     async run(payload: ApiPayload, context: Context): Promise<ApiResponse<any>> {
-        if (this.guard) {
-            const isAuthorize = await this.guard.canActivate(payload, context)
+        const apiInfo: ApiInfo | undefined = Reflect.getOwnMetadata(CTRL_KEY, this.constructor)
+        if (apiInfo && apiInfo.guard) {
+            const guard = context.getContainer().resolve<Guard>(apiInfo.guard)
+            const isAuthorize = await guard.canActivate(payload, apiInfo.security, context)
             if (!isAuthorize) {
                 throw new PermissionDenied()
             }
         }
 
-        if (this.validate) {
-            const {error} = this.validate.unknown().validate(payload.body)
-            if (error) {
-                throw new ValidateError().withMessage(error.details[0].message)
+        let input: any
+        if (apiInfo?.input) {
+            input = plainToClass(apiInfo.input, payload.body)
+            const errs = await validate(input, {validationError: {target: false}})
+            if (errs.length) {
+                throw new ValidateError().withMessage(errs[0].toString())
             }
+
+            return await this.handle(input, context)
         }
 
-        return await this.handle(payload.body, context)
+        return await this.handle(undefined, context)
     }
 
     abstract handle(body: any, context: Context): Promise<ApiResponse>
+}
+
+export function getMetadataApi(target: any): ApiInfo | undefined {
+    return Reflect.getOwnMetadata(CTRL_KEY, target)
 }

@@ -1,10 +1,31 @@
-import {ApiPayload, ApiResponse, Context, Controller, createApiApp, Router} from '@onedaycat/jaco'
+import {Api, ApiPayload, ApiResponse, Context, Controller, createApiApp, Info, Router} from '@onedaycat/jaco'
 import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
+import {IsString} from 'class-validator'
+import {JSONSchema} from 'class-validator-jsonschema'
 
+class Input {
+    @IsString()
+    @JSONSchema({
+        description: 'id',
+    })
+    id!: string
+
+    @IsString()
+    @Info({
+        description: 'name',
+    })
+    name!: string
+}
+
+@Api({
+    input: Input,
+    output: Input,
+    description: 'Test',
+})
 @Singleton()
 class Ctrl extends Controller {
-    async handle(body: any, context: Context): Promise<ApiResponse> {
-        return {body}
+    async handle(input: Input, context: Context): Promise<ApiResponse> {
+        return {body: input}
     }
 }
 
