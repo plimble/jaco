@@ -2,6 +2,10 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.0.18](https://github.com/onedaycat/jaco/compare/db-0.0.17...db-0.0.18) (2021-11-27)
+
+
+
 ## [0.0.17](https://github.com/onedaycat/jaco/compare/db-0.0.16...db-0.0.17) (2021-11-26)
 
 
