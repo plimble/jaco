@@ -1,15 +1,15 @@
-import Route from 'url-router'
 import {Constructor} from '@onedaycat/jaco-common'
+import Route from 'url-router'
 import {Controller} from './controller'
 
 export type ImportPromise = () => Promise<Constructor<Controller>>
-export type ResourceFn = (r: Router) => void
+export type ResourceFn = (r: ApiRouter) => void
 export type RouteResult<T> = {
     handler: T
     params: Record<string, string>
 }
 
-export class Router {
+export class ApiRouter {
     private readonly route: Route<ImportPromise>
     private readonly name: string
 
@@ -27,7 +27,7 @@ export class Router {
     }
 
     resource(name: string, fn: ResourceFn): this {
-        const router = new Router(this.route, `${this.name}/${name}`)
+        const router = new ApiRouter(this.route, `${this.name}/${name}`)
         fn(router)
 
         return this

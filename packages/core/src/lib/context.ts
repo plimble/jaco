@@ -1,6 +1,6 @@
-import {Req} from 'packages/core/src/lib/req'
-import {DependencyContainer} from 'tsyringe'
 import {container} from '@onedaycat/jaco-common'
+import {DependencyContainer} from 'tsyringe'
+import {Req} from './req'
 
 export const REQUEST_CONTEXT = 'v:req'
 

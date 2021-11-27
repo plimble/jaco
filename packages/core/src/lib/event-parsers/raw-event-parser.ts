@@ -1,6 +1,6 @@
-import {EventParser} from 'packages/core/src/lib/event-parser'
 import {AppError} from '@onedaycat/jaco-common'
 import {Context} from '../context'
+import {EventParser} from '../event-parser'
 
 export class RawEventParser implements EventParser {
     parseRequest(event: any, context: Context): any {

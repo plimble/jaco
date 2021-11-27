@@ -1,11 +1,11 @@
 import {MethodNotFound} from '@onedaycat/jaco-common'
-import {Handler} from '../../handler'
-import {Router} from './router'
-import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Context} from '../../context'
+import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
+import {Handler} from '../../handler'
+import {ApiRouter} from './router'
 
 export class RouterHandler implements Handler {
-    constructor(private router: Router) {}
+    constructor(private router: ApiRouter) {}
 
     async handle(payload: ApiPayload, context: Context): Promise<ApiResponse> {
         const result = this.router.getRoute(payload.method, payload.path)

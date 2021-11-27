@@ -1,7 +1,7 @@
-import {Api, ApiPayload, ApiResponse, Context, Controller, createApiApp, Info, Router} from '@onedaycat/jaco'
 import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
 import {IsString} from 'class-validator'
 import {JSONSchema} from 'class-validator-jsonschema'
+import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp, Info} from '../../src/index'
 
 class Input {
     @IsString()
@@ -30,7 +30,7 @@ class Ctrl extends Controller {
 }
 
 describe('Route', () => {
-    const router = new Router()
+    const router = new ApiRouter()
 
     router.resource('user', r => {
         r.get(':id', () => Promise.resolve(Ctrl))
