@@ -22,7 +22,7 @@ export class App {
                 return await app.invokeWithTimeout(
                     {
                         functionName: context.functionName,
-                        timeout: timeout > 0 ? timeout : 0,
+                        timeout: timeout > 0 ? timeout : undefined,
                         payload: undefined,
                         raw: event,
                     },
