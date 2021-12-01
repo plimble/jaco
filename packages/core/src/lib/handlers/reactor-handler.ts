@@ -30,7 +30,7 @@ async function handleError(
     try {
         await (reactor[onError] as any)(event, err, context)
     } catch (e: any) {
-        throw wrapError(e).withInput(event.toJSON())
+        throw wrapError(e)
     }
 }
 
@@ -44,7 +44,7 @@ async function handleErrorAll(
     try {
         await (reactor[onError] as any)(events, err, context)
     } catch (e: any) {
-        throw wrapError(e).withInput(events.map(event => event.toJSON()))
+        throw wrapError(e)
     }
 }
 
@@ -54,14 +54,18 @@ export class ReactorHandler implements Handler {
     async handle(events: any, context: Context): Promise<void> {
         const container = context.getContainer()
 
-        for (const setup of this.eventSetups) {
-            const filteredEvents = events.filter(e => setup.events.includes(e.type))
+        try {
+            for (const setup of this.eventSetups) {
+                const filteredEvents = events.filter(e => setup.events.includes(e.type))
 
-            if (filteredEvents.length) {
-                const react = container.resolve(setup.reactor)
+                if (filteredEvents.length) {
+                    const react = container.resolve(setup.reactor)
 
-                await this.handleReact(react, filteredEvents, context)
+                    await this.handleReact(react, filteredEvents, context)
+                }
             }
+        } catch (e) {
+            throw wrapError(e)
         }
     }
 
@@ -70,7 +74,7 @@ export class ReactorHandler implements Handler {
             try {
                 await reactor.beforeAllReact(events, context)
             } catch (e) {
-                const err = wrapError(e).withInput(events.map(event => event.toJSON()))
+                const err = wrapError(e)
                 if (reactor.onErrorBeforeAllReact) {
                     await handleErrorAll(reactor, 'onErrorBeforeAllReact', err, events, context)
                 }
@@ -105,7 +109,7 @@ export class ReactorHandler implements Handler {
             try {
                 await reactor.afterAllReacted(events, context)
             } catch (e) {
-                const err = wrapError(e).withInput(events.map(e => e.toJSON()))
+                const err = wrapError(e)
                 if (reactor.onErrorAfterAllReacted) {
                     await handleErrorAll(reactor, 'onErrorAfterAllReacted', err, events, context)
                 }
