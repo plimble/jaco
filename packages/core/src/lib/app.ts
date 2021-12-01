@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {AppError, Constructor, container, wrapError} from '@onedaycat/jaco-common'
+import {AppError, Constructor, container, TimeoutError, wrapError} from '@onedaycat/jaco-common'
 import {Handler} from './handler'
 import {EventParser} from './event-parser'
 import {Middleware, Next} from './middleware'
@@ -17,11 +17,15 @@ export class App {
     static handler(app: App): any {
         return async (event: any, context: any): Promise<any> => {
             try {
-                return await app.invoke({
-                    functionName: context.functionName,
-                    payload: undefined,
-                    raw: event,
-                })
+                return await app.invokeWithTimeout(
+                    {
+                        functionName: context.functionName,
+                        timeout: (context.getRemainingTimeInMillis() - 3) * 1000,
+                        payload: undefined,
+                        raw: event,
+                    },
+                    new Context(),
+                )
             } catch (e) {
                 const err = wrapError(e)
 
@@ -63,8 +67,27 @@ export class App {
         this.errorHandlers.push(...errorHandlers)
     }
 
-    async invoke<T>(req: Req<T>): Promise<T> {
-        const context = new Context()
+    async invokeWithTimeout<T>(req: Req<T>, context: Context): Promise<T> {
+        if (!req.timeout) {
+            return this.invoke(req, context)
+        }
+
+        const timeout = new Promise(resolve => {
+            setTimeout(() => resolve(new TimeoutError()), req.timeout)
+        })
+
+        const result = await Promise.race<any>([this.invoke(req, context), timeout])
+        if (result instanceof TimeoutError) {
+            const err = await this.handleErrors(result, context)
+
+            return this.eventParser.parseErrorResponse(err, context)
+        }
+
+        return result
+    }
+
+    async invoke<T>(req: Req<T>, context?: Context): Promise<T> {
+        if (!context) context = new Context()
         if (req.raw) {
             try {
                 req.payload = await this.eventParser.parseRequest(req.raw, context)
