@@ -17,10 +17,12 @@ export class App {
     static handler(app: App): any {
         return async (event: any, context: any): Promise<any> => {
             try {
+                const timeout = (context.getRemainingTimeInMillis() - 3) * 1000
+
                 return await app.invokeWithTimeout(
                     {
                         functionName: context.functionName,
-                        timeout: (context.getRemainingTimeInMillis() - 3) * 1000,
+                        timeout: timeout > 0 ? timeout : 0,
                         payload: undefined,
                         raw: event,
                     },
