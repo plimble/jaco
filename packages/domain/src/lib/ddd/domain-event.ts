@@ -1,4 +1,3 @@
-import {Metadata} from './metadata'
 import {Clock, Constructor} from '@onedaycat/jaco-common'
 
 export interface DomainEventPayload {
@@ -6,22 +5,23 @@ export interface DomainEventPayload {
     type: string
     payload: string
     time: number
-    metadata?: Metadata
 }
 
 export class DomainEvent<T = any> {
+    static is<T extends DomainEvent>(event: T, target: Constructor<DomainEvent>): event is T {
+        return (target as any).TYPE === event.type
+    }
+
     static loadFromPayload<D extends DomainEvent>(payload: DomainEventPayload, seqNumber?: string): D {
         return new DomainEvent(payload.id, payload.type, JSON.parse(payload.payload))
             .setTime(payload.time)
-            .setSeqNumber(seqNumber ?? '0')
-            .setMetadata(payload.metadata) as D
+            .setSeqNumber(seqNumber ?? '0') as D
     }
 
     id: string
     type: string
     payload: T
     time: number
-    metadata?: Metadata
     seqNumber: string
 
     constructor(id: string, type: string, payload: T) {
@@ -50,12 +50,6 @@ export class DomainEvent<T = any> {
         return this
     }
 
-    setMetadata(metadata?: Metadata): this {
-        this.metadata = metadata
-
-        return this
-    }
-
     toString(): string {
         return JSON.stringify(this)
     }
@@ -66,11 +60,6 @@ export class DomainEvent<T = any> {
             type: this.type,
             payload: JSON.stringify(this.payload),
             time: this.time,
-            metadata: this.metadata,
         }
     }
-}
-
-export function isDomainEvent<T extends DomainEvent>(event: DomainEvent, target: Constructor<T>): event is T {
-    return (target as any).TYPE === event.type
 }

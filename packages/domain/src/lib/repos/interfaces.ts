@@ -1,9 +1,10 @@
-import {Aggregate, AggregatePayload, AggregateState} from '@onedaycat/jaco-domain'
 import {ExpressionAttributeNameMap, ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
 import {DynamoDBx} from '@onedaycat/jaco-awsx'
+import {Aggregate} from '../ddd/aggregate'
+import {Entity} from '../ddd/entity'
 
-export type IndexMapper<T extends Model> = (agg: T) => IndexData
-export type CustomFields<T extends Model> = (agg: T) => CustomData
+export type IndexMapper<T> = (model: T) => IndexData
+export type CustomFields<T> = (model: T) => CustomData
 
 export type IndexData = {
     hashKey: string
@@ -23,6 +24,8 @@ export interface DDBScanItem {
     hashKey: string
     rk: string
     state: any
+    time: number
+    version: number
 }
 
 export type IndexName = {
@@ -76,11 +79,12 @@ export interface MultiGetByIndexInput {
     index: string
 }
 
-export interface AggregateRepoOptions<T extends Aggregate<any>> {
+export interface AggregateRepoOptions<T extends Aggregate> {
     aggregateType: string
     tableName: string
     db: DynamoDBx
-    createFactory: AggregateStoreCreateFactory
+    toAggregate: AggregateFactory<T>
+    toDbModel: DbAggregateFactory<T>
     indexMapper: IndexMapper<T>
     indexName?: IndexName
     deleteCondition?: string
@@ -88,8 +92,18 @@ export interface AggregateRepoOptions<T extends Aggregate<any>> {
     customFields?: CustomFields<T>
 }
 
-export type AggregateStoreCreateFactory<T extends AggregateState = any> = (payload: AggregatePayload<T>) => T
-export type QueryRepoCreateFactory<T extends Model> = (payload: any) => T
+export interface DbAggregate {
+    state: Record<string, any>
+    time: number
+    version: number
+}
+
+export type DbEntity = Record<string, any>
+
+export type AggregateFactory<T> = (payload: DbAggregate) => T
+export type EntityFactory<T> = (payload: DbEntity) => T
+export type DbAggregateFactory<T> = (payload: T) => DbAggregate
+export type DbEntityFactory<T> = (payload: T) => DbEntity
 export type ScanAllHandler<T> = (items: T[]) => Promise<void>
 
 export interface Model {
@@ -97,11 +111,12 @@ export interface Model {
     toJSON(): any
 }
 
-export interface QueryRepoOptions<T extends Model> {
+export interface QueryRepoOptions<T extends Entity> {
     modelType: string
     tableName: string
     db: DynamoDBx
-    createFactory: QueryRepoCreateFactory<T>
+    toEntity: EntityFactory<T>
+    toDbModel: DbEntityFactory<T>
     indexMapper: IndexMapper<T>
     indexName?: IndexName
     saveCondition?: string
@@ -135,6 +150,8 @@ export interface RangeKeyCondition {
         from: string
         to: string
     }
+    notNull?: boolean
+    neq?: string
 }
 
 export interface FilterCondition {

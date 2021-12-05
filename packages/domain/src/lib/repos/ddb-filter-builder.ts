@@ -1,32 +1,7 @@
 import {ExpressionAttributeNameMap, ExpressionAttributeValueMap} from 'aws-sdk/clients/dynamodb'
+import {FilterCondition} from './interfaces'
 
 export type ValueTypes = string | number | undefined | boolean
-
-export interface FilterCondition {
-    expression: string
-    keys: ExpressionAttributeNameMap
-    values: ExpressionAttributeValueMap
-}
-
-export interface QueryOptions {
-    sortAsc?: boolean
-    rangeKey?: RangeKeyCondition
-    filter?: FilterCondition
-    consistentRead?: boolean
-}
-
-export interface RangeKeyCondition {
-    eq?: string
-    gt?: string
-    gte?: string
-    lt?: string
-    lte?: string
-    beginWith?: string
-    between?: {
-        from: string
-        to: string
-    }
-}
 
 export class DdbFilterBuilder {
     private readonly attrNames: ExpressionAttributeNameMap

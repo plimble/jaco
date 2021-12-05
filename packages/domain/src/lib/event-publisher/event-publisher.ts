@@ -1,9 +1,9 @@
 import {EventTarget} from './interfaces'
-import {DomainEvent} from '../domain-event'
 import {KinesisPublisher} from './publisher/kinesis.publisher'
 import {SNSPublisher} from './publisher/sns.publisher'
 import {SnsFifoPublisher} from './publisher/sns-fifo.publisher'
 import {container, Singleton, wrapError} from '@onedaycat/jaco-common'
+import {DomainEvent} from '../ddd/domain-event'
 
 export interface EventPublisherOptions {
     targets: EventTarget[]

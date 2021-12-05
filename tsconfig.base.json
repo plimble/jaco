@@ -22,11 +22,10 @@
     "baseUrl": ".",
     "types": ["node"],
     "paths": {
-      "@onedaycat/jaco-cli": ["packages/cli/src/index.ts"],
       "@onedaycat/jaco": ["packages/core/src/index.ts"],
       "@onedaycat/jaco-awsx": ["packages/awsx/src/index.ts"],
+      "@onedaycat/jaco-cli": ["packages/cli/src/index.ts"],
       "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
-      "@onedaycat/jaco-db": ["packages/db/src/index.ts"],
       "@onedaycat/jaco-domain": ["packages/domain/src/index.ts"],
       "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
       "@onedaycat/jaco-sagas": ["packages/sagas/src/index.ts"],

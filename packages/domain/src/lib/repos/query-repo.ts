@@ -1,11 +1,10 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
-import {Aggregate, AggregatePayload, EventPublisher} from '@onedaycat/jaco-domain'
 import {
-    AggregateRepoOptions,
-    AggregateStoreCreateFactory,
     CustomFields,
+    DbEntityFactory,
     DDBDeleteKey,
     DDBScanItem,
+    EntityFactory,
     GetAllByIndexInput,
     GetByIndexInput,
     GetPageByIndexInput,
@@ -14,39 +13,42 @@ import {
     IndexName,
     MultiGetByIndexInput,
     PageOutput,
+    QueryDataModel,
     QueryOptions,
-    SaveOptions,
+    QueryRepoOptions,
     ScanAllHandler,
     ScanOutput,
 } from './interfaces'
-import {container} from 'tsyringe'
-import {Clock, InternalError, wrapError} from '@onedaycat/jaco-common'
+import {Clock, InternalError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
+import {Entity} from '../ddd/entity'
 
-export abstract class AggregateRepo<T extends Aggregate<any>> {
-    protected aggregateType: string
+export abstract class QueryRepo<T extends Entity> {
+    protected modelType: string
     protected tableName: string
     protected db: DynamoDBx
-    protected createFactory: AggregateStoreCreateFactory
+    protected toEntity: EntityFactory<T>
+    protected toDbModel: DbEntityFactory<T>
     protected indexMapper: IndexMapper<T>
-    protected customerFields?: CustomFields<T>
     protected indexName?: IndexName
+    protected customerFields?: CustomFields<T>
     protected defaultTTLInSec: number
-    protected eventPublisher: EventPublisher
+    protected saveCondition?: string
     protected deleteCondition?: string
     private index = new Map<string, string>()
 
-    protected constructor(options: AggregateRepoOptions<T>) {
-        this.aggregateType = options.aggregateType
+    protected constructor(options: QueryRepoOptions<T>) {
+        this.modelType = options.modelType
         this.tableName = options.tableName
         this.db = options.db
-        this.createFactory = options.createFactory
+        this.toEntity = options.toEntity
+        this.toDbModel = options.toDbModel
         this.indexMapper = options.indexMapper
         this.indexName = options.indexName
+        this.saveCondition = options.saveCondition
         this.deleteCondition = options.deleteCondition
         this.defaultTTLInSec = options.defaultTTLInSec ?? 0
         this.customerFields = options.customFields
-        this.eventPublisher = container.resolve(EventPublisher)
         this.initIndex()
     }
 
@@ -291,136 +293,86 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
             ],
         }
 
-        await this.db.createTable(schema)
+        await Promise.all([this.db.createTable(schema)])
     }
 
     async deleteTable(): Promise<void> {
-        await this.db.deleteTable({
-            TableName: this.tableName,
-        })
-    }
-
-    async save(agg: T, options?: SaveOptions): Promise<void> {
-        await this.getSaveTransaction(agg, options)
-    }
-
-    async delete(agg: T, forceDelete = false): Promise<void> {
-        await this.getDeleteTransaction(agg, forceDelete)
-    }
-
-    async getSaveTransaction(agg: T, options?: SaveOptions): Promise<void> {
-        if (!agg.hasChanged() && !options?.forceVersion) {
-            return
-        }
-
-        if (options?.autoVersion) {
-            agg.setVersion(agg.getVersion() + 1, agg.getTime())
-        }
-
-        const committedEvents = agg.commit()
-        const indexData = this.indexMapper(agg)
-
-        const payloadExtra: Record<string, any> = {
-            rk: `${this.aggregateType}-${agg.getId()}`,
-        }
-
-        for (const [indexName, value] of Object.entries(indexData)) {
-            if (indexName === 'hashKey' && value) {
-                payloadExtra.hk = value
-            } else if (value) {
-                payloadExtra[this.getIndex(indexName)] = value
-            }
-        }
-
-        if (options?.ttl && options.ttl > 0) {
-            payloadExtra.ttl = Clock.add(Clock.new(), options.ttl, 'second')
-        } else {
-            payloadExtra.ttl = this.defaultTTLInSec > 0 ? Clock.add(Clock.new(), this.defaultTTLInSec, 'second') : 0
-        }
-
-        if (this.customerFields) {
-            const customFields = this.customerFields(agg)
-            for (const [key, value] of Object.entries(customFields)) {
-                payloadExtra[key] = value
-            }
-        }
-
-        const payloadItem = DynamoDBx.marshall(agg.toJSON(), payloadExtra)
-
-        const tx: DynamoDB.TransactWriteItemList = []
-        tx.push({
-            Put: {
+        await Promise.all([
+            this.db.deleteTable({
                 TableName: this.tableName,
-                Item: payloadItem,
-                ConditionExpression: options?.forceVersion
-                    ? undefined
-                    : 'attribute_not_exists(version) or (attribute_exists(version) and version < :v)',
-                ExpressionAttributeValues: {
-                    ':v': {N: agg.getVersion().toString()},
-                },
-            },
-        })
+            }),
+        ])
+    }
 
+    async save(model: T, ttl?: number): Promise<void> {
         try {
-            await this.db.transactWriteItems({TransactItems: tx})
+            await this.db.putItem({
+                TableName: this.tableName,
+                Item: this.getPutItem(model, ttl),
+                ConditionExpression: this.saveCondition,
+            })
         } catch (e) {
-            throw wrapError(e).withInput(tx)
-        }
-
-        if (options?.aggregateOnly) return
-
-        try {
-            if (committedEvents && committedEvents.length) {
-                await this.eventPublisher.publish(committedEvents)
-            }
-        } catch (e) {
-            throw wrapError(e).withInput(committedEvents)
+            throw new InternalError().withCause(e)
         }
     }
 
-    async getDeleteTransaction(agg: T, forceDelete = false): Promise<void> {
-        const indexData = this.indexMapper(agg)
-        const committedEvents = agg.commit()
-        const tx: DynamoDB.TransactWriteItemList = [
-            {
-                Delete: {
-                    TableName: this.tableName,
-                    Key: {
-                        hk: {S: indexData.hashKey},
-                        rk: {S: `${this.aggregateType}-${agg.getId()}`},
-                    },
-                    ConditionExpression: this.deleteCondition,
+    async delete(model: T): Promise<void> {
+        try {
+            const indexData = this.indexMapper(model)
+            await this.db.deleteItem({
+                TableName: this.tableName,
+                Key: {
+                    hk: {S: indexData.hashKey},
+                    rk: {S: `${this.modelType}-${model.id}`},
                 },
-            },
-        ]
-
-        try {
-            if ((committedEvents && committedEvents.length) || forceDelete) {
-                await this.db.transactWriteItems({TransactItems: tx})
-            }
+                ConditionExpression: this.deleteCondition,
+            })
         } catch (e) {
-            throw wrapError(e).withInput(tx)
-        }
-
-        try {
-            if (committedEvents && committedEvents.length) {
-                await this.eventPublisher.publish(committedEvents)
-            }
-        } catch (e) {
-            wrapError(e).withInput(committedEvents)
+            throw new InternalError().withCause(e)
         }
     }
 
-    async multiDelete(aggs: Array<T>, forceDelete = false): Promise<void> {
+    async deleteById(hashKey: string, id: string): Promise<void> {
         try {
-            if (aggs && aggs.length) {
+            await this.db.deleteItem({
+                TableName: this.tableName,
+                Key: {
+                    hk: {S: hashKey},
+                    rk: {S: `${this.modelType}-${id}`},
+                },
+                ConditionExpression: this.deleteCondition,
+            })
+        } catch (e) {
+            throw new InternalError().withCause(e)
+        }
+    }
+
+    async multiDeleteById(keys: DDBDeleteKey[]): Promise<void> {
+        try {
+            if (keys.length) {
+                await this.db.multiWriteItem({
+                    Items: keys.map(key => ({
+                        TableName: this.tableName,
+                        DeleteItem: {
+                            Key: {
+                                hk: {S: key.hashKey},
+                                rk: {S: `${this.modelType}-${key.id}`},
+                            },
+                        },
+                    })),
+                })
+            }
+        } catch (e) {
+            throw new InternalError().withCause(e)
+        }
+    }
+
+    async multiDelete(models?: Array<T>): Promise<void> {
+        try {
+            if (models && models.length) {
                 await Promise.all(
-                    aggs.map(agg => {
-                        if (forceDelete || agg.hasChanged()) {
-                            return this.delete(agg, forceDelete)
-                        }
-
-                        return undefined
+                    models.map(model => {
+                        return this.delete(model)
                     }),
                 )
             }
@@ -429,14 +381,17 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
         }
     }
 
-    async multiSave(aggs: Array<T>, options?: SaveOptions): Promise<void> {
+    async multiSave(models: Array<T>, ttl?: number): Promise<void> {
         try {
-            if (aggs && aggs.length) {
-                await Promise.all(
-                    aggs.map(agg => {
-                        return this.save(agg, options)
-                    }),
-                )
+            if (models && models.length) {
+                await this.db.multiWriteItem({
+                    Items: models.map(model => ({
+                        TableName: this.tableName,
+                        PutItem: {
+                            Item: this.getPutItem(model, ttl),
+                        },
+                    })),
+                })
             }
         } catch (e) {
             throw new InternalError().withCause(e)
@@ -455,8 +410,8 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
         const items: T[] = []
         for (const item of result.Items) {
             const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
-            if (aggPayload.rk.startsWith(this.aggregateType)) {
-                items.push(this.createFactory(aggPayload as any))
+            if (aggPayload.rk.startsWith(this.modelType)) {
+                items.push(this.toEntity(aggPayload))
             }
         }
 
@@ -480,8 +435,8 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
             const items: T[] = []
             for (const item of result.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
-                if (aggPayload.rk.startsWith(this.aggregateType)) {
-                    items.push(this.createFactory(aggPayload as any))
+                if (aggPayload.rk.startsWith(this.modelType)) {
+                    items.push(this.toEntity(aggPayload.state))
                 }
             }
 
@@ -496,18 +451,18 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
     }
 
     protected async forceDeleteAllByHashKey(hashKey: string): Promise<void> {
-        const keys: Array<DDBDeleteKey> = []
+        const keys: DDBDeleteKey[] = []
         let token: string | undefined = undefined
         while (Boolean) {
             const result = (await this.getPage({
                 hashKey: hashKey,
                 limit: 1000,
                 token,
-            })) as PageOutput<Aggregate>
+            })) as PageOutput<T>
 
             if (result.items.length) {
                 for (const item of result.items) {
-                    keys.push({hashKey: hashKey, id: item.getId()})
+                    keys.push({hashKey: hashKey, id: item.id})
                 }
             }
 
@@ -521,13 +476,37 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
         await this.multiDeleteById(keys)
     }
 
+    protected async get(hashKey: string, rangeKeyBeginWith: string): Promise<T | undefined> {
+        try {
+            const dbInput: DynamoDB.GetItemInput = {
+                TableName: this.tableName,
+                ConsistentRead: true,
+                Key: {
+                    hk: {S: hashKey},
+                    rk: {S: `${this.modelType}-${rangeKeyBeginWith}`},
+                },
+            }
+
+            const item = await this.db.getItem(dbInput)
+            if (!item) {
+                return undefined
+            }
+
+            const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+
+            return this.toEntity(data.state)
+        } catch (e) {
+            throw new InternalError().withCause(e)
+        }
+    }
+
     protected async multiGet(hashKey: string, rangeKeys: string[]): Promise<{[id: string]: T} | undefined> {
         try {
             const noDupRangeKeys = Array.from(new Set<string>(rangeKeys))
             const keyItems = noDupRangeKeys.map<DynamoDB.AttributeMap>(key => {
                 return {
                     hk: {S: hashKey},
-                    rk: {S: `${this.aggregateType}-${key}`},
+                    rk: {S: `${this.modelType}-${key}`},
                 }
             })
 
@@ -544,12 +523,51 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
             const aggs: {[id: string]: T} = {}
             items
                 .map<T>(item => {
-                    const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
+                    const data = DynamoDBx.unmarshall<QueryDataModel>(item)
 
-                    return this.createFactory(aggPayload)
+                    return this.toEntity(data.state)
                 })
                 .forEach(s => {
-                    aggs[s.getId()] = s
+                    aggs[s.id] = s
+                })
+
+            return aggs
+        } catch (e) {
+            throw new InternalError().withCause(e)
+        }
+    }
+
+    protected async multiGetByIndex(input: MultiGetByIndexInput): Promise<{[id: string]: T} | undefined> {
+        try {
+            const indexName = this.getIndex(input.index)
+
+            const noDupRangeKeys = Array.from(new Set<string>(input.rangeKeys))
+            const items = await this.db.multiQuery(
+                noDupRangeKeys.map(rangeKey => ({
+                    TableName: this.tableName,
+                    IndexName: indexName,
+                    KeyConditionExpression: `hk = :hk and ${indexName} = :rk`,
+                    ExpressionAttributeValues: {
+                        ':hk': {S: input.hashKey},
+                        ':rk': {S: rangeKey},
+                    },
+                    Limit: 1,
+                })),
+            )
+
+            if (!items.length) {
+                return undefined
+            }
+
+            const aggs: {[id: string]: T} = {}
+            items
+                .map<T>(item => {
+                    const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+
+                    return this.toEntity(data.state)
+                })
+                .forEach(s => {
+                    aggs[s.id] = s
                 })
 
             return aggs
@@ -560,15 +578,15 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
 
     protected async getAll(hashKey: string, options?: QueryOptions): Promise<T[]> {
         try {
-            const query = AggregateRepo.createKeyCondition(hashKey, 'rk', options, this.aggregateType)
+            const query = QueryRepo.createKeyCondition(hashKey, 'rk', options, this.modelType)
 
             const items = await this.db.query({
                 TableName: this.tableName,
                 KeyConditionExpression: query.KeyConditionExpression,
                 ExpressionAttributeValues: query.ExpressionAttributeValues,
                 ScanIndexForward: query.ScanIndexForward,
-                ConsistentRead: options?.consistentRead ?? true,
                 FilterExpression: query.FilterExpression,
+                ConsistentRead: options?.consistentRead ?? true,
                 ExpressionAttributeNames: query.ExpressionAttributeNames,
             })
 
@@ -578,48 +596,11 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
 
             const aggs: T[] = []
             for (const item of items) {
-                const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
-                aggs.push(this.createFactory(aggPayload))
+                const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+                aggs.push(this.toEntity(data.state))
             }
 
             return aggs
-        } catch (e) {
-            throw new InternalError().withCause(e)
-        }
-    }
-
-    protected async getPage(input: GetPageInput): Promise<PageOutput<T>> {
-        try {
-            const query = AggregateRepo.createKeyCondition(input.hashKey, 'rk', input.options, this.aggregateType)
-
-            const res = await this.db.queryPage({
-                HashKey: 'hk',
-                RangeKey: 'rk',
-                HashValue: input.hashKey,
-                Token: input.token,
-                Query: {
-                    TableName: this.tableName,
-                    KeyConditionExpression: query.KeyConditionExpression,
-                    ExpressionAttributeValues: query.ExpressionAttributeValues,
-                    Limit: input.limit,
-                    ConsistentRead: input.options?.consistentRead ?? true,
-                    ScanIndexForward: query.ScanIndexForward,
-                    FilterExpression: query.FilterExpression,
-                    ExpressionAttributeNames: query.ExpressionAttributeNames,
-                },
-            })
-
-            if (!res.Items.length) {
-                return {items: []}
-            }
-
-            const aggs: T[] = []
-            for (const item of res.Items) {
-                const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
-                aggs.push(this.createFactory(aggPayload))
-            }
-
-            return {items: aggs, nextToken: res.NextToken}
         } catch (e) {
             throw new InternalError().withCause(e)
         }
@@ -629,7 +610,7 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
         try {
             const indexName = this.getIndex(input.index)
 
-            const query = AggregateRepo.createKeyCondition(input.hashKey, indexName, input.options)
+            const query = QueryRepo.createKeyCondition(input.hashKey, indexName, input.options)
 
             const res = await this.db.queryPage({
                 HashKey: 'hk',
@@ -654,8 +635,45 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
 
             const aggs: T[] = []
             for (const item of res.Items) {
-                const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
-                aggs.push(this.createFactory(aggPayload))
+                const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+                aggs.push(this.toEntity(data.state))
+            }
+
+            return {items: aggs, nextToken: res.NextToken}
+        } catch (e) {
+            throw new InternalError().withCause(e)
+        }
+    }
+
+    protected async getPage(input: GetPageInput): Promise<PageOutput<T>> {
+        try {
+            const query = QueryRepo.createKeyCondition(input.hashKey, 'rk', input.options, this.modelType)
+
+            const res = await this.db.queryPage({
+                HashKey: 'hk',
+                RangeKey: 'rk',
+                HashValue: input.hashKey,
+                Token: input.token,
+                Query: {
+                    TableName: this.tableName,
+                    KeyConditionExpression: query.KeyConditionExpression,
+                    ExpressionAttributeValues: query.ExpressionAttributeValues,
+                    Limit: input.limit,
+                    ScanIndexForward: query.ScanIndexForward,
+                    FilterExpression: query.FilterExpression,
+                    ConsistentRead: input.options?.consistentRead ?? true,
+                    ExpressionAttributeNames: query.ExpressionAttributeNames,
+                },
+            })
+
+            if (!res.Items.length) {
+                return {items: []}
+            }
+
+            const aggs: T[] = []
+            for (const item of res.Items) {
+                const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+                aggs.push(this.toEntity(data.state))
             }
 
             return {items: aggs, nextToken: res.NextToken}
@@ -668,7 +686,7 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
         try {
             const indexName = this.getIndex(input.index)
 
-            const query = AggregateRepo.createKeyCondition(input.hashKey, indexName, input.options)
+            const query = QueryRepo.createKeyCondition(input.hashKey, indexName, input.options)
 
             const items = await this.db.query({
                 TableName: this.tableName,
@@ -686,48 +704,9 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
 
             const aggs: T[] = []
             for (const item of items) {
-                const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
-                aggs.push(this.createFactory(aggPayload))
+                const data = DynamoDBx.unmarshall<QueryDataModel>(item)
+                aggs.push(this.toEntity(data.state))
             }
-
-            return aggs
-        } catch (e) {
-            throw new InternalError().withCause(e)
-        }
-    }
-
-    protected async multiGetByIndex(input: MultiGetByIndexInput): Promise<{[id: string]: T} | undefined> {
-        try {
-            const indexName = this.getIndex(input.index)
-            const rangeKeys = Array.from(new Set<string>(input.rangeKeys))
-
-            const items = await this.db.multiQuery(
-                rangeKeys.map(rangeKey => ({
-                    TableName: this.tableName,
-                    IndexName: indexName,
-                    KeyConditionExpression: `hk = :hk and ${indexName} = :rk`,
-                    ExpressionAttributeValues: {
-                        ':hk': {S: input.hashKey},
-                        ':rk': {S: rangeKey},
-                    },
-                    Limit: 1,
-                })),
-            )
-
-            if (!items.length) {
-                return undefined
-            }
-
-            const aggs: {[id: string]: T} = {}
-            items
-                .map<T>(item => {
-                    const aggPayload = DynamoDBx.unmarshall<AggregatePayload>(item)
-
-                    return this.createFactory(aggPayload)
-                })
-                .forEach(s => {
-                    aggs[s.getId()] = s
-                })
 
             return aggs
         } catch (e) {
@@ -738,7 +717,8 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
     protected async getByIndex(input: GetByIndexInput): Promise<T | undefined> {
         try {
             const indexName = this.getIndex(input.index)
-            const query = AggregateRepo.createKeyCondition(input.hashKey, indexName, input.options)
+
+            const query = QueryRepo.createKeyCondition(input.hashKey, indexName, input.options)
 
             const items = await this.db.query({
                 TableName: this.tableName,
@@ -755,56 +735,43 @@ export abstract class AggregateRepo<T extends Aggregate<any>> {
                 return undefined
             }
 
-            const payload = DynamoDBx.unmarshall<AggregatePayload>(items[0])
+            const data = DynamoDBx.unmarshall<QueryDataModel>(items[0])
 
-            return this.createFactory(payload)
+            return this.toEntity(data.state)
         } catch (e) {
             throw new InternalError().withCause(e)
         }
     }
 
-    protected async multiDeleteById(keys: Array<DDBDeleteKey>): Promise<void> {
-        try {
-            if (keys.length) {
-                await this.db.multiWriteItem({
-                    Items: keys.map(key => ({
-                        TableName: this.tableName,
-                        DeleteItem: {
-                            Key: {
-                                hk: {S: key.hashKey},
-                                rk: {S: `${this.aggregateType}-${key.id}`},
-                            },
-                        },
-                    })),
-                })
-            }
-        } catch (e) {
-            throw new InternalError().withCause(e)
+    private getPutItem(model: T, ttl?: number): DynamoDB.PutItemInputAttributeMap {
+        const indexData = this.indexMapper(model)
+
+        const payloadExtra: Record<string, any> = {
+            rk: `${this.modelType}-${model.id}`,
         }
-    }
 
-    protected async get(hashKey: string, rangeKeyBeginWith: string): Promise<T | undefined> {
-        try {
-            const dbInput: DynamoDB.GetItemInput = {
-                TableName: this.tableName,
-                ConsistentRead: true,
-                Key: {
-                    hk: {S: hashKey},
-                    rk: {S: `${this.aggregateType}-${rangeKeyBeginWith}`},
-                },
+        for (const [indexName, value] of Object.entries(indexData)) {
+            if (indexName === 'hashKey' && value) {
+                payloadExtra.hk = value
+            } else if (value) {
+                payloadExtra[this.getIndex(indexName)] = value
             }
-
-            const item = await this.db.getItem(dbInput)
-            if (!item) {
-                return undefined
-            }
-
-            const payload = DynamoDBx.unmarshall<AggregatePayload>(item)
-
-            return this.createFactory(payload)
-        } catch (e) {
-            throw new InternalError().withCause(e)
         }
+
+        if (ttl && ttl > 0) {
+            payloadExtra.ttl = Clock.add(Clock.new(), ttl, 'second')
+        } else {
+            payloadExtra.ttl = this.defaultTTLInSec > 0 ? Clock.add(Clock.new(), this.defaultTTLInSec, 'second') : 0
+        }
+
+        if (this.customerFields) {
+            const customFields = this.customerFields(model)
+            for (const [key, value] of Object.entries(customFields)) {
+                payloadExtra[key] = value
+            }
+        }
+
+        return DynamoDBx.marshall({state: this.toDbModel(model)}, payloadExtra)
     }
 
     private initIndex() {

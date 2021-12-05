@@ -1,4 +1,4 @@
-import {DomainEvent, DomainEventPayload} from '../domain-event'
+import {DomainEvent, DomainEventPayload} from '../ddd/domain-event'
 
 export interface Publisher {
     publish(setup: EventTarget, events: Array<DomainEvent | DomainEventPayload>, groupId?: string): Promise<void>

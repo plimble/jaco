@@ -1,20 +1,19 @@
 import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
 import {IsString} from 'class-validator'
-import {JSONSchema} from 'class-validator-jsonschema'
 import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp, Info} from '../../src/index'
 
 class Input {
     @IsString()
-    @JSONSchema({
+    @Info({
         description: 'id',
     })
-    id!: string
+    id = ''
 
     @IsString()
     @Info({
         description: 'name',
     })
-    name!: string
+    name = ''
 }
 
 @Api({
@@ -50,7 +49,7 @@ describe('Route', () => {
             },
         })
         expect(result).toEqual({
-            body: JSON.stringify({name: 'hello', id: '1'}),
+            body: JSON.stringify({id: '1', name: 'hello'}),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -67,7 +66,7 @@ describe('Route', () => {
             },
         })
         expect(result).toEqual({
-            body: JSON.stringify({name: 'hello', id: '1'}),
+            body: JSON.stringify({id: '1', name: 'hello'}),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -84,7 +83,7 @@ describe('Route', () => {
             },
         })
         expect(result).toEqual({
-            body: JSON.stringify({name: 'hello', id: '1'}),
+            body: JSON.stringify({id: '1', name: 'hello'}),
             headers: {
                 'Content-Type': 'application/json',
             },
