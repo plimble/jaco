@@ -1,18 +1,13 @@
 import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
-import {IsString} from 'class-validator'
-import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp, FieldInfo} from '../../src/index'
+import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp} from '../../src/index'
+import {Schema, Validate} from '@onedaycat/jaco-validator'
 
+@Validate()
 class Input {
-    @IsString()
-    @FieldInfo({
-        description: 'id',
-    })
+    @Schema({type: 'string'})
     id = ''
 
-    @IsString()
-    @FieldInfo({
-        description: 'name',
-    })
+    @Schema({type: 'string'})
     name = ''
 }
 

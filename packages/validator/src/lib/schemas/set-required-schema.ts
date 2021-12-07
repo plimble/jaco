@@ -1,8 +1,8 @@
 import {JSONSchemaType} from 'ajv'
 
 export function setRequiredSchema(
-    targetSchema: JSONSchemaType<any>,
-    propSchema: JSONSchemaType<any>,
+    targetSchema: Partial<JSONSchemaType<any>>,
+    propSchema: Partial<JSONSchemaType<any>>,
     propName: string,
 ): void {
     if (!propSchema.optional) {
