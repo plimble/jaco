@@ -1,14 +1,17 @@
 {
   "version": 2,
   "projects": {
+    "api-client": "packages/api-client",
     "awsx": "packages/awsx",
     "cli": "packages/cli",
     "common": "packages/common",
     "core": "packages/core",
+    "deploy": "packages/deploy",
     "domain": "packages/domain",
     "http": "packages/http",
     "sagas": "packages/sagas",
     "sentry": "packages/sentry",
-    "testing": "packages/testing"
+    "testing": "packages/testing",
+    "validator": "packages/validator"
   }
 }

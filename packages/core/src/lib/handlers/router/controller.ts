@@ -1,18 +1,18 @@
 import 'reflect-metadata'
-import {PermissionDenied, ValidateError} from '@onedaycat/jaco-common'
+import {Constructor, PermissionDenied, ValidateError} from '@onedaycat/jaco-common'
 import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Guard} from './guard'
 import {plainToClass} from 'class-transformer'
 import {validate} from 'class-validator'
 
-export {JSONSchema as Info} from 'class-validator-jsonschema'
+export {JSONSchema as FieldInfo} from 'class-validator-jsonschema'
 
 export interface ApiInfo {
-    input?: any
-    output: any
+    input?: Constructor<any>
+    output: Constructor<any>
     security?: any
-    guard?: any
+    guard?: Constructor<Guard>
     description?: string
 }
 

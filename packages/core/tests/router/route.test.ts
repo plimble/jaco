@@ -1,16 +1,16 @@
 import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
 import {IsString} from 'class-validator'
-import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp, Info} from '../../src/index'
+import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp, FieldInfo} from '../../src/index'
 
 class Input {
     @IsString()
-    @Info({
+    @FieldInfo({
         description: 'id',
     })
     id = ''
 
     @IsString()
-    @Info({
+    @FieldInfo({
         description: 'name',
     })
     name = ''

@@ -1,0 +1,48 @@
+{
+  "root": "packages/api-client",
+  "sourceRoot": "packages/api-client/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/api-client/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/api-client"],
+      "options": {
+        "jestConfig": "packages/api-client/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/api-client",
+        "tsConfig": "packages/api-client/tsconfig.lib.json",
+        "packageJson": "packages/api-client/package.json",
+        "main": "packages/api-client/src/index.ts",
+        "assets": ["packages/api-client/*.md"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["api-client:deploy"],
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
+      }
+    }
+  },
+  "tags": []
+}

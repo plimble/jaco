@@ -9,6 +9,12 @@ export type RouteResult<T> = {
     params: Record<string, string>
 }
 
+const ctrlPaths: Record<string, ImportPromise> = {}
+
+export function controllerPaths(): Record<string, ImportPromise> {
+    return ctrlPaths
+}
+
 export class ApiRouter {
     private readonly route: Route<ImportPromise>
     private readonly name: string
@@ -35,30 +41,35 @@ export class ApiRouter {
 
     get(path: string, ctrlImport: ImportPromise): this {
         this.route.add(this.createPath('GET', path), ctrlImport)
+        ctrlPaths[this.createPath('GET', path)] = ctrlImport
 
         return this
     }
 
     post(path: string, ctrlImport: ImportPromise): this {
         this.route.add(this.createPath('POST', path), ctrlImport)
+        ctrlPaths[this.createPath('POST', path)] = ctrlImport
 
         return this
     }
 
     put(path: string, ctrlImport: ImportPromise): this {
         this.route.add(this.createPath('PUT', path), ctrlImport)
+        ctrlPaths[this.createPath('PUT', path)] = ctrlImport
 
         return this
     }
 
     patch(path: string, ctrlImport: ImportPromise): this {
         this.route.add(this.createPath('PATCH', path), ctrlImport)
+        ctrlPaths[`${this.name}/${path}`] = ctrlImport
 
         return this
     }
 
     delete(path: string, ctrlImport: ImportPromise): this {
         this.route.add(this.createPath('DELETE', path), ctrlImport)
+        ctrlPaths[this.createPath('DELETE', path)] = ctrlImport
 
         return this
     }

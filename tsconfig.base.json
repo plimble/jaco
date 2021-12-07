@@ -23,14 +23,17 @@
     "types": ["node"],
     "paths": {
       "@onedaycat/jaco": ["packages/core/src/index.ts"],
+      "@onedaycat/jaco-api-client": ["packages/api-client/src/index.ts"],
       "@onedaycat/jaco-awsx": ["packages/awsx/src/index.ts"],
       "@onedaycat/jaco-cli": ["packages/cli/src/index.ts"],
       "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
+      "@onedaycat/jaco-deploy": ["packages/deploy/src/index.ts"],
       "@onedaycat/jaco-domain": ["packages/domain/src/index.ts"],
       "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
       "@onedaycat/jaco-sagas": ["packages/sagas/src/index.ts"],
       "@onedaycat/jaco-sentry": ["packages/sentry/src/index.ts"],
-      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"]
+      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"],
+      "@onedaycat/jaco-validator": ["packages/validator/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

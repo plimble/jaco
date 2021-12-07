@@ -1,0 +1,48 @@
+{
+  "root": "packages/validator",
+  "sourceRoot": "packages/validator/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/validator/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/validator"],
+      "options": {
+        "jestConfig": "packages/validator/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/validator",
+        "tsConfig": "packages/validator/tsconfig.lib.json",
+        "packageJson": "packages/validator/package.json",
+        "main": "packages/validator/src/index.ts",
+        "assets": ["packages/validator/*.md"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["validator:deploy"],
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
+      }
+    }
+  },
+  "tags": []
+}
