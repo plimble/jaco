@@ -4,9 +4,7 @@ import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Guard} from './guard'
 import {plainToClass} from 'class-transformer'
-import {validate} from 'class-validator'
-
-export {JSONSchema as FieldInfo} from 'class-validator-jsonschema'
+import {validate} from '@onedaycat/jaco-validator'
 
 export interface ApiInfo {
     input?: Constructor<any>
@@ -27,7 +25,7 @@ export function Api(info: ApiInfo): (target: any) => any {
 }
 
 export abstract class Controller {
-    async run(payload: ApiPayload, context: Context): Promise<ApiResponse<any>> {
+    async run(payload: ApiPayload, context: Context): Promise<ApiResponse> {
         const apiInfo: ApiInfo | undefined = Reflect.getOwnMetadata(CTRL_KEY, this.constructor)
         if (apiInfo && apiInfo.guard) {
             const guard = context.getContainer().resolve<Guard>(apiInfo.guard)
@@ -40,9 +38,9 @@ export abstract class Controller {
         let input: any
         if (apiInfo?.input) {
             input = plainToClass(apiInfo.input, payload.body)
-            const errs = await validate(input, {validationError: {target: false}})
-            if (errs.length) {
-                throw new ValidateError().withMessage(errs[0].toString())
+            const errMsg = validate(apiInfo.input, input)
+            if (errMsg) {
+                throw new ValidateError().withMessage(errMsg)
             }
 
             return await this.handle(input, context)
