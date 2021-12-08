@@ -1,7 +1,5 @@
 export interface TSDocOptions {
     desc?: string
-    requirement?: string
-    logic?: string
     deprecated?: boolean | string
     validValues?: string[]
     errors?: Array<{
@@ -41,8 +39,8 @@ export class TSDoc {
         this.str.length = 0
 
         let hasDesc = false
-        let hasReq = false
-        let hasLogic = false
+        const hasReq = false
+        const hasLogic = false
         let hasvalidValue = false
         let hasError = false
         let hasThrow = false
@@ -54,24 +52,6 @@ export class TSDoc {
         if (options.desc) {
             hasDesc = true
             this.wrapText(options.desc)
-        }
-
-        if (options.requirement) {
-            if (hasDesc) {
-                this.newline()
-            }
-
-            hasReq = true
-            this.wrapText(options.requirement)
-        }
-
-        if (options.logic) {
-            if (hasDesc || hasReq) {
-                this.newline()
-            }
-
-            hasLogic = true
-            this.wrapText(options.logic)
         }
 
         if (options.validValues) {
