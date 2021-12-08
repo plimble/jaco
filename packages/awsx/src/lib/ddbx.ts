@@ -10,7 +10,7 @@ import DynamoDB, {
 } from 'aws-sdk/clients/dynamodb'
 import {JSONObject} from './json-object'
 import {DynamoDBCursor} from './ddbx.cursor'
-import {chunkArray, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, chunkArray, InternalError, Singleton} from '@onedaycat/jaco-common'
 import {TransactionCanceled} from './errors'
 
 @Singleton()
@@ -67,7 +67,7 @@ export class DynamoDBx {
                 throw new TransactionCanceled().withInput(params)
             }
 
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -79,7 +79,7 @@ export class DynamoDBx {
                 throw new TransactionCanceled().withInput(params)
             }
 
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -87,7 +87,7 @@ export class DynamoDBx {
         try {
             return await this.client.batchGetItem(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -99,7 +99,7 @@ export class DynamoDBx {
                 throw new TransactionCanceled().withInput(params)
             }
 
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -112,7 +112,7 @@ export class DynamoDBx {
 
             return res.Item
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -120,7 +120,7 @@ export class DynamoDBx {
         try {
             return await this.client.deleteItem(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -134,7 +134,7 @@ export class DynamoDBx {
             if (options.allowExist && e.code === 'ResourceInUseException') {
                 return {}
             }
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -148,7 +148,7 @@ export class DynamoDBx {
             if (options.allowNotFound && e.code === 'ResourceNotFoundException') {
                 return {}
             }
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -162,7 +162,7 @@ export class DynamoDBx {
                 throw new TransactionCanceled().withInput(params)
             }
 
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -172,7 +172,7 @@ export class DynamoDBx {
         try {
             return await this.client.transactGetItems(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -201,7 +201,7 @@ export class DynamoDBx {
 
             return items
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -272,7 +272,7 @@ export class DynamoDBx {
                 NextToken: nextToken,
             }
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -294,7 +294,7 @@ export class DynamoDBx {
                 lastEvaluatedKey: res.LastEvaluatedKey,
             }
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -347,7 +347,7 @@ export class DynamoDBx {
                 throw new TransactionCanceled().withInput(params)
             }
 
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -392,7 +392,7 @@ export class DynamoDBx {
 
             return items
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 }

@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {Constructor, PermissionDenied, ValidateError} from '@onedaycat/jaco-common'
+import {AppError, AppErrorInfo, Constructor, PermissionDenied, ValidateError} from '@onedaycat/jaco-common'
 import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Guard} from './guard'
@@ -12,6 +12,7 @@ export interface ApiInfo {
     security?: any
     guard?: Constructor<Guard>
     description?: string
+    errors?: AppErrorInfo[]
 }
 
 const CTRL_KEY = Symbol('jaco:ctrl')
@@ -31,7 +32,7 @@ export abstract class Controller {
             const guard = context.getContainer().resolve<Guard>(apiInfo.guard)
             const isAuthorize = await guard.canActivate(payload, apiInfo.security, context)
             if (!isAuthorize) {
-                throw new PermissionDenied()
+                throw new AppError(PermissionDenied)
             }
         }
 
@@ -40,7 +41,7 @@ export abstract class Controller {
             input = plainToClass(apiInfo.input, payload.body)
             const errMsg = validate(apiInfo.input, input)
             if (errMsg) {
-                throw new ValidateError().withMessage(errMsg)
+                throw new AppError(ValidateError).withMessage(errMsg)
             }
 
             return await this.handle(input, context)

@@ -1,0 +1,79 @@
+import { AppError } from '@onedaycat/errors';
+import { HttpErrorResponse } from './api.service';
+import { ApiConfig } from './api-config';
+import { HttpErrorResponse as NgHttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, defer } from 'rxjs';
+
+interface Params {
+  [key: string]: any;
+}
+
+interface HttpParams {
+  [key: string]: string | string[];
+}
+
+interface HttpOptions {
+  headers: HttpHeaders;
+  params?: HttpParams;
+  body?: any;
+}
+
+interface RequestOptions {
+  config: ApiConfig;
+  params?: Params;
+  body?: any;
+}
+
+function parseParams(params: Params): HttpParams {
+  const data: HttpParams = {};
+  Object.keys(params).forEach(k => {
+    const value = params[k];
+    if (value) {
+      if (Array.isArray(value)) {
+        data[k] = value.map(v => v.toString());
+      } else {
+        data[k] = value.toString();
+      }
+    }
+  });
+  return data;
+}
+
+function httpBodyReplacer(_: string, value: any): any {
+  return value != null && value !== '' ? value : undefined;
+}
+
+export function parseHttpBody(body: Record<string, any>): any {
+  return JSON.stringify(body, httpBodyReplacer);
+}
+
+export function createHttpErrorResponse(error: AppError): HttpErrorResponse {
+  return new NgHttpErrorResponse({
+    error: {
+      error: {
+        code: error.code,
+        type: error.type,
+        message: error.message,
+        httpStatus: 500
+      }
+    }
+  });
+}
+
+export function createHttpOptions(options: RequestOptions): Observable<HttpOptions> {
+  return defer(async () => {
+    const token = await options.config.credential();
+    const httpOptions: HttpOptions = {
+      headers: new HttpHeaders({
+        Authorization: token
+      })
+    };
+    if (options.body) {
+      httpOptions.body = options.body;
+    }
+    if (options.params) {
+      httpOptions.params = parseParams(options.params);
+    }
+    return httpOptions;
+  });
+}

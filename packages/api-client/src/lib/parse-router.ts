@@ -1,25 +1,19 @@
-import {validationMetadatasToSchemas} from 'class-validator-jsonschema'
 import * as glob from 'glob'
-import {SchemaObject} from 'openapi3-ts'
 import {Controller, controllerPaths, getMetadataApi} from '@onedaycat/jaco'
-import {Constructor} from '@onedaycat/jaco-common'
-import {defaultMetadataStorage} from 'class-transformer/cjs/storage'
+import {AppErrorInfo, Constructor} from '@onedaycat/jaco-common'
+import {getSchema} from '@onedaycat/jaco-validator'
 
 export interface ApiSchema {
     method: string
     path: string
     ctrl: Constructor<Controller>
     desc?: string
-    inputClass?: string
-    outputClass?: string
+    errors?: AppErrorInfo[]
+    inputSchema?: Record<string, any>
+    outputSchema?: Record<string, any>
 }
 
-export interface ParseSchemasResult {
-    apiSchemas: ApiSchema[]
-    jsonSchemas: Record<string, SchemaObject>
-}
-
-export async function parseRouter(globPath: string): Promise<ParseSchemasResult> {
+export async function parseRouter(globPath: string): Promise<ApiSchema[]> {
     const apiSchemas = new Map<string, ApiSchema>()
     const paths = glob.sync(globPath)
     for (const path of paths) {
@@ -35,19 +29,13 @@ export async function parseRouter(globPath: string): Promise<ParseSchemasResult>
                     method: method,
                     path: path,
                     desc: apiInfo.description,
-                    inputClass: apiInfo.input?.name,
-                    outputClass: apiInfo.output?.name,
+                    inputSchema: apiInfo.input ? getSchema(apiInfo.input) : undefined,
+                    outputSchema: apiInfo.output ? getSchema(apiInfo.output) : undefined,
+                    errors: apiInfo.errors,
                 })
             }
         }
     }
 
-    const jsonSchemas = validationMetadatasToSchemas({
-        classTransformerMetadataStorage: defaultMetadataStorage,
-    })
-
-    return {
-        apiSchemas: Array.from(apiSchemas.values()),
-        jsonSchemas: jsonSchemas,
-    }
+    return Array.from(apiSchemas.values())
 }

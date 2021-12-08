@@ -22,7 +22,7 @@ import {
     ScanOutput,
 } from './interfaces'
 import {container} from 'tsyringe'
-import {Clock, InternalError, wrapError} from '@onedaycat/jaco-common'
+import {AppError, Clock, InternalError, wrapError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 import {Aggregate} from '../ddd/aggregate'
 import {EventPublisher} from '../event-publisher/event-publisher'
@@ -435,7 +435,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 )
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -449,7 +449,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 )
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -564,7 +564,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -594,7 +594,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -631,7 +631,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return {items: aggs, nextToken: res.NextToken}
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -670,7 +670,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return {items: aggs, nextToken: res.NextToken}
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -702,7 +702,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -741,7 +741,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -769,7 +769,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return this.toAggregate(payload)
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -789,7 +789,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 })
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -813,7 +813,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             return this.toAggregate(payload)
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -829,12 +829,12 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
     private getIndex(name: string): string {
         if (!this.indexName) {
-            throw new InternalError(`Index ${name} not found`)
+            throw new AppError(InternalError).withMessage(`Index ${name} not found`)
         }
 
         const indexKey = this.index.get(name)
         if (!indexKey) {
-            throw new InternalError(`Index ${name} not found`)
+            throw new AppError(InternalError).withMessage(`Index ${name} not found`)
         }
 
         return indexKey

@@ -1,5 +1,5 @@
 import SES, {BulkEmailDestination} from 'aws-sdk/clients/ses'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 
 export interface Recipient {
     email: string
@@ -33,7 +33,7 @@ export class SESX {
         try {
             await this.client.sendTemplatedEmail(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -54,7 +54,7 @@ export class SESX {
         try {
             await this.client.sendBulkTemplatedEmail(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 }

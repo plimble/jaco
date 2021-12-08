@@ -1,5 +1,5 @@
 import Kinesis from 'aws-sdk/clients/kinesis'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 
 @Singleton()
 export class Kinesisx {
@@ -19,7 +19,7 @@ export class Kinesisx {
         try {
             return await this.client.putRecords(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 }

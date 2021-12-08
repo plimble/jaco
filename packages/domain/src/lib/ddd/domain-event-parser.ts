@@ -41,7 +41,7 @@ export class DomainEventParser {
             return this.parseDomainEventPayload(input)
         }
 
-        throw new InternalError('Unable to parse domain event').withInput(input)
+        throw new AppError(InternalError).withMessage('Unable to parse domain event').withInput(input)
     }
 
     private parseSns(input: SNSEvent): DomainEvent[] {

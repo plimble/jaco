@@ -1,40 +1,30 @@
-import {IsDefined, IsEnum, IsNumber, IsString, ValidateNested} from 'class-validator'
 import {Profile} from './profile'
-import {Type} from 'class-transformer'
-import {FieldInfo} from '@onedaycat/jaco'
+import {Schema, Validate} from '@onedaycat/jaco-validator'
 
 export enum AccountType {
     USER = 'USER',
     ADMIN = 'ADMIN',
 }
 
-@FieldInfo({
+@Validate({
     description: 'Account model',
 })
 export class Account {
-    @IsString()
-    @IsEnum(['1', '2'])
+    @Schema({type: 'string', enum: ['1', '2']})
     id = ''
 
-    @IsString()
+    @Schema({type: 'string'})
     name = ''
 
-    @IsNumber()
-    @FieldInfo({
-        format: 'timestamp',
-    })
+    @Schema({type: 'number', format: 'timestamp'})
     createdAt = 0
 
-    @Type(() => Profile)
-    @ValidateNested()
+    @Schema({type: 'object', ref: Profile})
     profile: Profile = new Profile()
 
-    @IsEnum(AccountType)
+    @Schema({type: 'string', enum: AccountType})
     type: AccountType = AccountType.USER
 
-    @FieldInfo({
-        deprecated: true,
-    })
-    @IsDefined()
+    @Schema({type: 'any', deprecated: true})
     deprecated: any
 }

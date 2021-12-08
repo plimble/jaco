@@ -19,45 +19,45 @@ export type TypeName =
 export type TransformType = (type: string) => string
 
 export abstract class BaseType {
-    public nullable = false
-    public optional = false
-    public doc = new TSDoc()
-    public abstract type: TypeName
-    public transform?: TransformType
+    nullable = false
+    optional = false
+    doc = new TSDoc()
+    abstract type: TypeName
+    transform?: TransformType
 
-    public abstract toNodeType(): string
+    abstract toNodeType(): string
 
-    public abstract toKotlinType(): string
+    abstract toKotlinType(): string
 
-    public abstract toSwiftType(): string
+    abstract toSwiftType(): string
 
-    public abstract toDartType(): string
+    abstract toDartType(): string
 
-    public setDoc(options: TSDocOptions): this {
+    setDoc(options: TSDocOptions): this {
         this.doc.build(options)
 
         return this
     }
 
-    public setNullable(nullable: boolean): this {
+    setNullable(nullable: boolean): this {
         this.nullable = nullable
 
         return this
     }
 
-    public setOptional(optional: boolean): this {
+    setOptional(optional: boolean): this {
         this.optional = optional
 
         return this
     }
 
-    public setTransformType(transform?: TransformType): this {
+    setTransformType(transform?: TransformType): this {
         this.transform = transform
 
         return this
     }
 
-    public isType<T extends BaseType>(type: Constructor<T>): this is T {
+    isType<T extends BaseType>(type: Constructor<T>): this is T {
         return this instanceof type
     }
 }

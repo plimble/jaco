@@ -1,5 +1,5 @@
 import STS from 'aws-sdk/clients/sts'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 
 @Singleton()
 export class STSX {
@@ -15,7 +15,7 @@ export class STSX {
         try {
             return await this.client.assumeRole(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -25,7 +25,7 @@ export class STSX {
         try {
             return await this.client.assumeRoleWithWebIdentity(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 }

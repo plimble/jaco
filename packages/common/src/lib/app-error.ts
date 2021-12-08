@@ -117,55 +117,16 @@ export class AppError extends Error {
     }
 }
 
-export class ValidateError extends AppError {
-    constructor(msg?: string) {
-        super(400, 'ValidateError', msg ?? 'Input value is not valid')
-    }
-}
+export const ValidateError: AppErrorInfo = {status: 400, code: 'ValidateError', msg: 'Input value is not valid'}
+export const MethodNotFound: AppErrorInfo = {status: 404, code: 'MethodNotFound', msg: 'Method not found'}
+export const Maintenance: AppErrorInfo = {status: 503, code: 'Maintenance', msg: 'Maintenance'}
+export const PermissionDenied: AppErrorInfo = {status: 403, code: 'PermissionDenied', msg: 'Permission denied'}
+export const NotImplemented: AppErrorInfo = {status: 503, code: 'NotImplemented', msg: 'Not implemented'}
+export const Unauthorized: AppErrorInfo = {status: 401, code: 'Unauthorized', msg: 'Request is not authorized'}
+export const TimeoutError: AppErrorInfo = {status: 408, code: 'TimeoutError', msg: 'Request timeout'}
+export const InternalError: AppErrorInfo = {status: 500, code: 'InternalError', msg: 'Internal error'}
 
-export class MethodNotFound extends AppError {
-    constructor(msg?: string) {
-        super(404, 'MethodNotFound', msg ?? 'Method not found')
-    }
-}
-
-export class Maintenance extends AppError {
-    constructor(msg?: string) {
-        super(503, 'Maintenance', msg ?? 'Maintenance')
-    }
-}
-
-export class PermissionDenied extends AppError {
-    constructor(msg?: string) {
-        super(403, 'PermissionDenied', msg ?? 'Permission denied')
-    }
-}
-
-export class NotImplemented extends AppError {
-    constructor(msg?: string) {
-        super(503, 'NotImplemented', msg ?? 'Not implemented')
-    }
-}
-
-export class Unauthorized extends AppError {
-    constructor(msg?: string) {
-        super(401, 'Unauthorized', msg ?? 'Request is not authorized')
-    }
-}
-
-export class TimeoutError extends AppError {
-    constructor(msg?: string) {
-        super(408, 'TimeoutError', msg ?? 'Request timeout')
-    }
-}
-
-export class InternalError extends AppError {
-    constructor(msg?: string) {
-        super(500, 'InternalError', msg ?? 'Internal error')
-    }
-}
-
-export function isError(e: any, code: string | AppErrorInfo): boolean {
+export function isError(e: any, code: string | AppErrorInfo): e is AppError {
     const appCode = typeof code === 'string' ? code : code.code
     if (e instanceof AppError) {
         return e.is(appCode)

@@ -1,4 +1,4 @@
-import {MethodNotFound} from '@onedaycat/jaco-common'
+import {AppError, MethodNotFound} from '@onedaycat/jaco-common'
 import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Handler} from '../../handler'
@@ -10,7 +10,7 @@ export class RouterHandler implements Handler {
     async handle(payload: ApiPayload, context: Context): Promise<ApiResponse> {
         const result = this.router.getRoute(payload.method, payload.path)
         if (!result) {
-            throw new MethodNotFound()
+            throw new AppError(MethodNotFound)
         }
 
         for (const [param, val] of Object.entries(result.params)) {

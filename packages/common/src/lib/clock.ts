@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {InternalError} from './app-error'
+import {AppError, InternalError} from './app-error'
 
 dayjs.extend(utc)
 
@@ -53,7 +53,7 @@ export class Clock {
     static parse(dateTime: string, format: string | undefined = undefined): number {
         const date = dayjs(dateTime, format)
         if (!date.isValid()) {
-            throw new InternalError('Invalid date time format')
+            throw new AppError(InternalError).withMessage('Invalid date time format')
         }
 
         return date.utc().unix()

@@ -19,7 +19,7 @@ import {
     ScanAllHandler,
     ScanOutput,
 } from './interfaces'
-import {Clock, InternalError} from '@onedaycat/jaco-common'
+import {AppError, Clock, InternalError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 import {Entity} from '../ddd/entity'
 
@@ -312,7 +312,7 @@ export abstract class QueryRepo<T extends Entity> {
                 ConditionExpression: this.saveCondition,
             })
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -328,7 +328,7 @@ export abstract class QueryRepo<T extends Entity> {
                 ConditionExpression: this.deleteCondition,
             })
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -343,7 +343,7 @@ export abstract class QueryRepo<T extends Entity> {
                 ConditionExpression: this.deleteCondition,
             })
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -363,7 +363,7 @@ export abstract class QueryRepo<T extends Entity> {
                 })
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -377,7 +377,7 @@ export abstract class QueryRepo<T extends Entity> {
                 )
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -394,7 +394,7 @@ export abstract class QueryRepo<T extends Entity> {
                 })
             }
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -496,7 +496,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return this.toEntity(data.state)
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -533,7 +533,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -572,7 +572,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -602,7 +602,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -641,7 +641,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return {items: aggs, nextToken: res.NextToken}
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -678,7 +678,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return {items: aggs, nextToken: res.NextToken}
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -710,7 +710,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return aggs
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -739,7 +739,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             return this.toEntity(data.state)
         } catch (e) {
-            throw new InternalError().withCause(e)
+            throw new AppError(InternalError).withCause(e)
         }
     }
 
@@ -786,12 +786,12 @@ export abstract class QueryRepo<T extends Entity> {
 
     private getIndex(name: string): string {
         if (!this.indexName) {
-            throw new InternalError(`Index ${name} not found`)
+            throw new AppError(InternalError).withMessage(`Index ${name} not found`)
         }
 
         const indexKey = this.index.get(name)
         if (!indexKey) {
-            throw new InternalError(`Index ${name} not found`)
+            throw new AppError(InternalError).withMessage(`Index ${name} not found`)
         }
 
         return indexKey

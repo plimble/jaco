@@ -80,7 +80,7 @@ export class DynamoDBCursor {
         })
 
         if (lastEvalKey[hkKey] == null || lastEvalKey[rkKey] == null || lastEvalKey[hkKey].S !== hkValue) {
-            throw new ValidateError().withMessage('Invalid pagination token')
+            throw new AppError(ValidateError).withMessage('Invalid pagination token')
         }
 
         return lastEvalKey

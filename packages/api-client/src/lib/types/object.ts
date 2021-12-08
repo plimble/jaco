@@ -6,25 +6,25 @@ import {MapType} from './map'
 export type ObjectKind = 'input' | 'output' | 'model' | 'object'
 
 export class ObjectType extends BaseType {
-    public type: TypeName = 'object'
-    public kind: ObjectKind = 'object'
-    public fields: Record<string, BaseType> = {}
-    public name = ''
-    public dependencies: BaseType[] = []
+    type: TypeName = 'object'
+    kind: ObjectKind = 'object'
+    fields: Record<string, BaseType> = {}
+    name = ''
+    dependencies: BaseType[] = []
 
-    public setName(name: string): this {
+    setName(name: string): this {
         this.name = name
 
         return this
     }
 
-    public setKind(kind: ObjectKind): this {
+    setKind(kind: ObjectKind): this {
         this.kind = kind
 
         return this
     }
 
-    public setFields(fields: Record<string, BaseType>): this {
+    setFields(fields: Record<string, BaseType>): this {
         this.fields = fields
 
         for (const field of Object.values(fields)) {
@@ -34,19 +34,19 @@ export class ObjectType extends BaseType {
         return this
     }
 
-    public toKotlinType(): string {
+    toKotlinType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toNodeType(): string {
+    toNodeType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toSwiftType(): string {
+    toSwiftType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toDartType(): string {
+    toDartType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 

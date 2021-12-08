@@ -1,5 +1,5 @@
 import S3 from 'aws-sdk/clients/s3'
-import {chunkArray, InternalError, Singleton, wrapError} from '@onedaycat/jaco-common'
+import {AppError, chunkArray, InternalError, Singleton, wrapError} from '@onedaycat/jaco-common'
 
 @Singleton()
 export class S3X {
@@ -19,7 +19,7 @@ export class S3X {
         try {
             return await this.client.createBucket(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -27,7 +27,7 @@ export class S3X {
         try {
             await this.client.deleteBucket(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -60,7 +60,7 @@ export class S3X {
 
             await this.multiDelete(bucketName, keys)
         } catch (e) {
-            throw new InternalError().withCause(e).withInput({bucketName, folder})
+            throw new AppError(InternalError).withCause(e).withInput({bucketName, folder})
         }
     }
 
@@ -73,7 +73,7 @@ export class S3X {
         try {
             await this.client.putObject(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(wrapError(e)).withInput(params)
+            throw new AppError(InternalError).withCause(wrapError(e)).withInput(params)
         }
     }
 
@@ -85,7 +85,7 @@ export class S3X {
         try {
             await this.client.deleteObject(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -107,7 +107,7 @@ export class S3X {
                 }),
             )
         } catch (e) {
-            throw new InternalError().withCause(e).withInput({bucketName, keys})
+            throw new AppError(InternalError).withCause(e).withInput({bucketName, keys})
         }
     }
 }

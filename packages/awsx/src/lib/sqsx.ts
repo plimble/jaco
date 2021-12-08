@@ -1,5 +1,5 @@
 import SQS from 'aws-sdk/clients/sqs'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 
 @Singleton()
 export class SQSX {
@@ -19,7 +19,7 @@ export class SQSX {
         try {
             return await this.client.sendMessage(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 
@@ -27,7 +27,7 @@ export class SQSX {
         try {
             return await this.client.sendMessageBatch(params).promise()
         } catch (e) {
-            throw new InternalError().withCause(e).withInput(params)
+            throw new AppError(InternalError).withCause(e).withInput(params)
         }
     }
 }

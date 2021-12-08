@@ -1,5 +1,5 @@
 import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider'
-import {InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
 import {AliasExists, UserNotFound} from './errors'
 
 @Singleton()
@@ -33,7 +33,7 @@ export class Cognitox {
                 case 'UserNotFound':
                     throw new UserNotFound()
                 default:
-                    throw new InternalError().withCause(e).withInput(params)
+                    throw new AppError(InternalError).withCause(e).withInput(params)
             }
         }
     }
@@ -54,7 +54,7 @@ export class Cognitox {
                 case 'UserNotFound':
                     throw new UserNotFound()
                 default:
-                    throw new InternalError().withCause(e).withInput(params)
+                    throw new AppError(InternalError).withCause(e).withInput(params)
             }
         }
     }

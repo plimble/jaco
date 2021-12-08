@@ -1,21 +1,21 @@
 import {BaseType, TypeName} from './base'
 
 export class AnyType extends BaseType {
-    public type: TypeName = 'any'
+    type: TypeName = 'any'
 
-    public toKotlinType(): string {
+    toKotlinType(): string {
         return this.transform ? this.transform('Any') : 'Any'
     }
 
-    public toNodeType(): string {
+    toNodeType(): string {
         return this.transform ? this.transform('any') : 'any'
     }
 
-    public toSwiftType(): string {
+    toSwiftType(): string {
         return this.transform ? this.transform('Any') : 'Any'
     }
 
-    public toDartType(): string {
+    toDartType(): string {
         return this.transform ? this.transform('dynamic') : 'dynamic'
     }
 }

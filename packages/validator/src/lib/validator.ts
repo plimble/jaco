@@ -32,3 +32,7 @@ export function validate(obj: Constructor<any>, data: Record<string, any>): stri
 
     return undefined
 }
+
+export function getSchema(obj: Constructor<any>): Record<string, any> | undefined {
+    return getMetadataSchema(obj)
+}

@@ -37,7 +37,7 @@ export class TSDoc {
         return hd
     }
 
-    public build(options: TSDocOptions): void {
+    build(options: TSDocOptions): void {
         this.str.length = 0
 
         let hasDesc = false
@@ -137,7 +137,7 @@ export class TSDoc {
         this.end()
     }
 
-    public toString(indent = 0): string {
+    toString(indent = 0): string {
         if (this.str.length === 0) {
             return ''
         }
@@ -149,7 +149,7 @@ export class TSDoc {
             .join('')
     }
 
-    public toDartString(indent = 0): string {
+    toDartString(indent = 0): string {
         if (this.str.length === 0) {
             return ''
         }

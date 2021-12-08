@@ -9,6 +9,8 @@ export function Validate(options?: ValidateOptions) {
         const schema = getMetadataSchema(target)
         schema.$id = (target as Function).name
         schema.type = 'object'
+        schema.ref = target
+        schema.additionalProperties = false
         if (options) {
             schema.description = options.description
         }

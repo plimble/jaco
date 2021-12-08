@@ -1,21 +1,21 @@
 import {BaseType, TypeName} from './base'
 
 export class MoneyType extends BaseType {
-    public type: TypeName = 'money'
+    type: TypeName = 'money'
 
-    public toKotlinType(): string {
+    toKotlinType(): string {
         return this.transform ? this.transform('Double') : 'Double'
     }
 
-    public toNodeType(): string {
+    toNodeType(): string {
         return this.transform ? this.transform('number') : 'number'
     }
 
-    public toSwiftType(): string {
+    toSwiftType(): string {
         return this.transform ? this.transform('Double') : 'Double'
     }
 
-    public toDartType(): string {
+    toDartType(): string {
         return this.transform ? this.transform('double') : 'double'
     }
 }

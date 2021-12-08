@@ -1,9 +1,10 @@
-import {IsString} from 'class-validator'
+import {Schema, Validate} from '@onedaycat/jaco-validator'
 
+@Validate()
 export class Tag {
-    @IsString()
+    @Schema({type: 'string'})
     id = ''
 
-    @IsString()
+    @Schema({type: 'string'})
     name = ''
 }

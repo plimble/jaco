@@ -1,22 +1,20 @@
-import {IsBoolean, IsNumber, IsOptional, IsString, ValidateNested} from 'class-validator'
 import {Tag} from './tag'
-import {Type} from 'class-transformer'
+import {Schema, Validate} from '@onedaycat/jaco-validator'
 
+@Validate()
 export class Profile {
-    @IsString()
+    @Schema({type: 'string'})
     email = ''
 
-    @IsNumber()
-    @IsOptional()
+    @Schema({type: 'number', optional: true})
     mobile?: number
 
-    @IsBoolean()
+    @Schema({type: 'boolean'})
     isPublic = false
 
-    @ValidateNested({each: true})
-    @Type(() => Tag)
+    @Schema({type: 'array', items: {type: 'object', ref: Tag}})
     tags: Tag[] = []
 
-    @IsString({each: true})
+    @Schema({type: 'array', items: {type: 'string'}})
     addresses: string[] = []
 }

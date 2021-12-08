@@ -1,35 +1,35 @@
 import {BaseType, TypeName} from './base'
 
 export class EnumType extends BaseType {
-    public type: TypeName = 'enum'
-    public values: string[] = []
-    public name = ''
+    type: TypeName = 'enum'
+    values: string[] = []
+    name = ''
 
-    public setName(name: string): this {
+    setName(name: string): this {
         this.name = name
 
         return this
     }
 
-    public setValues(vals: string[]): this {
+    setValues(vals: string[]): this {
         this.values = vals
 
         return this
     }
 
-    public toKotlinType(): string {
+    toKotlinType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toNodeType(): string {
+    toNodeType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toSwiftType(): string {
+    toSwiftType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 
-    public toDartType(): string {
+    toDartType(): string {
         return this.transform ? this.transform(this.name) : this.name
     }
 }

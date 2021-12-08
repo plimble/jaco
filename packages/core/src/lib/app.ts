@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {AppError, Constructor, container, TimeoutError, wrapError} from '@onedaycat/jaco-common'
+import {AppError, Constructor, container, isError, TimeoutError, wrapError} from '@onedaycat/jaco-common'
 import {Handler} from './handler'
 import {EventParser} from './event-parser'
 import {Middleware, Next} from './middleware'
@@ -75,11 +75,11 @@ export class App {
         }
 
         const timeout = new Promise(resolve => {
-            setTimeout(() => resolve(new TimeoutError()), req.timeout)
+            setTimeout(() => resolve(new AppError(TimeoutError)), req.timeout)
         })
 
         const result = await Promise.race<any>([this.invoke(req, context), timeout])
-        if (result instanceof TimeoutError) {
+        if (isError(result, TimeoutError)) {
             const err = await this.handleErrors(result, context)
 
             return this.eventParser.parseErrorResponse(err, context)

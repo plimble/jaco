@@ -1,5 +1,5 @@
 import SNS from 'aws-sdk/clients/sns'
-import {InternalError, Singleton, sleep} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton, sleep} from '@onedaycat/jaco-common'
 
 @Singleton()
 export class SNSX {
@@ -23,11 +23,11 @@ export class SNSX {
                 if (e.message === 'Rate exceeded') {
                     await sleep(100)
                 } else {
-                    throw new InternalError().withCause(e).withInput(params)
+                    throw new AppError(InternalError).withCause(e).withInput(params)
                 }
             }
         }
 
-        throw new InternalError().withInput(params)
+        throw new AppError(InternalError).withInput(params)
     }
 }
