@@ -10,7 +10,6 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && nx run-many --all --target=build",
-    "affected:patch": "yarn build && nx run affected:version --releaseAs=patch --parallel=1",
     "deploy:patch": "yarn build && nx run-many --all --target=version --releaseAs=patch --parallel=1",
     "deploy:minor": "yarn build && nx run-many --all --target=version --releaseAs=minor --parallel=1",
     "deploy:major": "yarn build && nx run-many --all --target=version --releaseAs=major --parallel=1"
