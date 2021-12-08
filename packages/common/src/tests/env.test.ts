@@ -1,10 +1,14 @@
-import {Env} from '@onedaycat/jaco-common'
+import {loadEnv, overrideEnv} from '../../src/lib/env'
 
-class TestEnv extends Env {
+class TestEnv {
     name = ''
     db = ''
     timeZone = ''
     miss = ''
+
+    constructor() {
+        loadEnv(this, 'X')
+    }
 }
 
 describe('Env', () => {
@@ -14,7 +18,6 @@ describe('Env', () => {
 
     test('load env', () => {
         const env = new TestEnv()
-        env.loadEnv('X')
 
         expect(env.name).toEqual(process.env.X_name)
         expect(env.db).toEqual(process.env.X_db)
@@ -24,8 +27,7 @@ describe('Env', () => {
 
     test('override env', () => {
         const env = new TestEnv()
-        env.loadEnv('X')
-        env.override({
+        overrideEnv(env, {
             miss: '1',
             name: '2',
         })
