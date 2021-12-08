@@ -10,9 +10,9 @@
   "license": "MIT",
   "scripts": {
     "build": "rm -rf dist && nx run-many --all --target=build",
-    "deploy:patch": "yarn build && nx run core:version --releaseAs=patch && nx run-many --all --target=deploy --parallel=1",
-    "deploy:minor": "yarn build && nx run core:version --releaseAs=minor && nx run-many --all --target=deploy --parallel=1",
-    "deploy:major": "yarn build && nx run core:version --releaseAs=major && nx run-many --all --target=deploy --parallel=1"
+    "deploy:patch": "nx run core:version --releaseAs=patch && yarn build && nx run-many --all --target=deploy --parallel=1",
+    "deploy:minor": "nx run core:version --releaseAs=minor && yarn build && nx run-many --all --target=deploy --parallel=1",
+    "deploy:major": "nx run core:version --releaseAs=major && yarn build && nx run-many --all --target=deploy --parallel=1"
   },
   "dependencies": {
     "abort-controller": "^3.0.0",
