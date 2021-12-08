@@ -34,7 +34,8 @@
       "options": {
         "postTargets": ["api-client:deploy"],
         "skipRootChangelog": true,
-        "skipProjectChangelog": true
+        "skipProjectChangelog": true,
+        "syncVersions": true
       }
     },
     "deploy": {

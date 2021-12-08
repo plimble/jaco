@@ -34,7 +34,8 @@
       "options": {
         "postTargets": ["awsx:deploy"],
         "skipRootChangelog": true,
-        "skipProjectChangelog": true
+        "skipProjectChangelog": true,
+        "syncVersions": true
       }
     },
     "deploy": {

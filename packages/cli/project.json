@@ -17,6 +17,32 @@
         "jestConfig": "packages/cli/jest.config.js",
         "passWithNoTests": true
       }
+    },
+    "build": {
+      "executor": "@nrwl/node:package",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/cli",
+        "tsConfig": "packages/cli/tsconfig.lib.json",
+        "packageJson": "packages/cli/package.json",
+        "main": "packages/cli/src/index.ts",
+        "assets": ["packages/cli/*.md"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "postTargets": ["cli:deploy"],
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true,
+        "syncVersions": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
+      }
     }
   },
   "tags": []
