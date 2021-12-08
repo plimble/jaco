@@ -32,10 +32,8 @@
     "version": {
       "executor": "@jscutlery/semver:version",
       "options": {
-        "postTargets": ["http:deploy"],
         "skipRootChangelog": true,
-        "skipProjectChangelog": true,
-        "syncVersions": true
+        "skipProjectChangelog": true
       }
     },
     "deploy": {
