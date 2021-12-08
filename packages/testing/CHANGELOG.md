@@ -6,6 +6,10 @@ This file was generated using [@jscutlery/semver](https://github.com/jscutlery/s
 
 
 
+## [0.0.22](https://github.com/onedaycat/jaco/compare/testing-0.0.21...testing-0.0.22) (2021-12-08)
+
+
+
 ## [0.0.21](https://github.com/onedaycat/jaco/compare/testing-0.0.20...testing-0.0.21) (2021-12-08)
 
 
