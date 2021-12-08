@@ -1,7 +1,7 @@
-import {DomainEvent, DomainEventPayload} from '../ddd/domain-event'
+import {DomainEvent} from '../ddd/domain-event'
 
 export interface Publisher {
-    publish(setup: EventTarget, events: Array<DomainEvent | DomainEventPayload>, groupId?: string): Promise<void>
+    publish(setup: EventTarget, events: Array<DomainEvent>, groupId?: string): Promise<void>
 }
 
 export interface KinesisTarget {

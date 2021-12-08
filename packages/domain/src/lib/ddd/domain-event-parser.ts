@@ -1,6 +1,6 @@
 import {KinesisStreamEvent, SNSEvent, SQSEvent} from 'aws-lambda'
 import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
-import {DomainEvent, DomainEventPayload} from './domain-event'
+import {DomainEvent, ParsedDomainEvent} from './domain-event'
 
 @Singleton()
 export class DomainEventParser {
@@ -16,7 +16,7 @@ export class DomainEventParser {
         throw err
     }
 
-    parseRequest(input: any): DomainEvent[] {
+    parseRequest(input: any): ParsedDomainEvent[] {
         // Kinesis
         if (input.Records && input.Records.length && input.Records[0].kinesis) {
             return this.parseKiesis(input)
@@ -32,52 +32,36 @@ export class DomainEventParser {
             return this.parseSqs(input)
         }
 
-        if (Array.isArray(input) && input.length && input[0] instanceof DomainEvent) {
-            return input
-        }
-
         // DomainEvent payload list
-        if (Array.isArray(input) && input.length && input[0].id && input[0].payload && input[0].type) {
-            return this.parseDomainEventPayload(input)
+        if (Array.isArray(input) && input.length && input[0].event && input[0].seqNumber) {
+            return input
         }
 
         throw new AppError(InternalError).withMessage('Unable to parse domain event').withInput(input)
     }
 
-    private parseSns(input: SNSEvent): DomainEvent[] {
-        return input.Records.map<DomainEvent>(rec => {
-            const payload = JSON.parse(rec.Sns.Message)
-
-            return DomainEvent.loadFromPayload(payload)
+    private parseSns(input: SNSEvent): ParsedDomainEvent[] {
+        return input.Records.map<ParsedDomainEvent>(rec => {
+            return {event: JSON.parse(rec.Sns.Message) as DomainEvent, seqNumber: '0'}
         })
     }
 
-    private parseKiesis(input: KinesisStreamEvent): DomainEvent[] {
-        return input.Records.map<DomainEvent>(rec => {
+    private parseKiesis(input: KinesisStreamEvent): ParsedDomainEvent[] {
+        return input.Records.map<ParsedDomainEvent>(rec => {
             const body = new Buffer(rec.kinesis.data, 'base64')
 
-            return DomainEvent.loadFromPayload(JSON.parse(body.toString()), rec.kinesis.sequenceNumber)
+            return {event: JSON.parse(body.toString()) as DomainEvent, seqNumber: rec.kinesis.sequenceNumber}
         })
     }
 
-    private parseSqs(input: SQSEvent): DomainEvent[] {
-        return input.Records.map<DomainEvent>(rec => {
+    private parseSqs(input: SQSEvent): ParsedDomainEvent[] {
+        return input.Records.map<ParsedDomainEvent>(rec => {
             let payload = JSON.parse(rec.body)
             if (payload.Type && payload.Type === 'Notification') {
                 payload = JSON.parse(payload.Message)
             }
 
-            return DomainEvent.loadFromPayload(payload, rec.attributes.SequenceNumber)
-        })
-    }
-
-    private parseDomainEventPayload(input: Array<DomainEventPayload | DomainEvent>): DomainEvent[] {
-        return input.map<DomainEvent>(rec => {
-            if (rec instanceof DomainEvent) {
-                return rec
-            }
-
-            return DomainEvent.loadFromPayload(rec)
+            return {event: payload as DomainEvent, seqNumber: rec.attributes.SequenceNumber ?? '0'}
         })
     }
 }

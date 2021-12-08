@@ -1,5 +1,5 @@
 import {DomainEvent} from './domain-event'
-import {Constructor, deepClone} from '@onedaycat/jaco-common'
+import {deepClone} from '@onedaycat/jaco-common'
 
 export abstract class Aggregate {
     abstract id: string
@@ -11,8 +11,8 @@ export abstract class Aggregate {
         return this._events.length > 0
     }
 
-    hasEvent(eventClass: Constructor<DomainEvent>): boolean {
-        return this._events.some(event => event instanceof eventClass)
+    hasEvent(evetType: string): boolean {
+        return this._events.some(event => event.type === evetType)
     }
 
     addEvent(event: DomainEvent): void {

@@ -1,4 +1,4 @@
-import {TSDoc, TSDocOptions} from '../helper/ts/ts-doc'
+import {TSDoc, TSDocOptions} from '../helper/ts-doc'
 import {Constructor} from '@onedaycat/jaco-common'
 
 export type TypeName =
