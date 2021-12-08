@@ -2,6 +2,10 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [0.0.6](https://github.com/onedaycat/jaco/compare/awsx-0.0.5...awsx-0.0.6) (2021-12-08)
+
+
+
 ## [0.0.5](https://github.com/onedaycat/jaco/compare/awsx-0.0.4...awsx-0.0.5) (2021-12-08)
 
 
