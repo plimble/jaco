@@ -7,8 +7,8 @@ export class RawEventParser implements EventParser {
         return event
     }
 
-    onParseRequestError(err: AppError, context: Context): void {
-        throw err
+    onParseRequestError(err: AppError, context: Context): any {
+        return err
     }
 
     parseResponse(payload: any, context: Context): any {
@@ -16,6 +16,6 @@ export class RawEventParser implements EventParser {
     }
 
     parseErrorResponse(err: AppError, context: Context): any {
-        throw err
+        return err
     }
 }

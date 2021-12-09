@@ -28,6 +28,9 @@ export interface ApiResponse<T = any> {
 
 @Singleton()
 export class ApiGatewayEventParser implements EventParser {
+    static warpSuccess?: string
+    static warpError?: string
+
     static defaultHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
     }
@@ -80,25 +83,50 @@ export class ApiGatewayEventParser implements EventParser {
     }
 
     onParseRequestError(err: AppError, context: Context): APIGatewayProxyResult {
+        let payload = err.toErrorPayload() as any
+        if (err.status === 500) {
+            payload.message = 'Server Error'
+            payload.code = 'InternalError'
+        }
+
+        if (ApiGatewayEventParser.warpError) {
+            payload = {[ApiGatewayEventParser.warpError]: payload}
+        }
+
         return {
             statusCode: err.status,
-            body: JSON.stringify(err.toErrorPayload()),
+            body: JSON.stringify(payload),
             headers: ApiGatewayEventParser.defaultHeaders,
         }
     }
 
     parseResponse(payload: ApiResponse, context: Context): APIGatewayProxyResult {
+        let result = payload.body
+        if (ApiGatewayEventParser.warpSuccess) {
+            result = {[ApiGatewayEventParser.warpSuccess]: payload.body}
+        }
+
         return {
             statusCode: payload.status ?? 200,
-            body: JSON.stringify(payload.body),
+            body: JSON.stringify(result),
             headers: ApiGatewayEventParser.mergeHeaders(payload.headers),
         }
     }
 
     parseErrorResponse(err: AppError, context: Context): APIGatewayProxyResult {
+        let payload = err.toErrorPayload() as any
+        if (err.status === 500) {
+            payload.message = 'Server Error'
+            payload.code = 'InternalError'
+        }
+
+        if (ApiGatewayEventParser.warpError) {
+            payload = {[ApiGatewayEventParser.warpError]: payload}
+        }
+
         return {
             statusCode: err.status,
-            body: JSON.stringify(err.toErrorPayload()),
+            body: JSON.stringify(payload),
             headers: ApiGatewayEventParser.defaultHeaders,
         }
     }

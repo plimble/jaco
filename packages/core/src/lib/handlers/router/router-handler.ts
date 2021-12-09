@@ -1,8 +1,12 @@
-import {AppError, MethodNotFound} from '@onedaycat/jaco-common'
+import {AppError, InternalError, MethodNotFound, ValidateError} from '@onedaycat/jaco-common'
 import {Context} from '../../context'
 import {ApiPayload, ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Handler} from '../../handler'
 import {ApiRouter} from './router'
+import {Guard} from './guard'
+import {validate} from '@onedaycat/jaco-validator'
+import {ApiInfo} from './controller'
+import {getMetadataApi} from './metadata-storage'
 
 export class RouterHandler implements Handler {
     constructor(private router: ApiRouter) {}
@@ -20,6 +24,25 @@ export class RouterHandler implements Handler {
         const ctrlClass = await result.handler()
         const ctrl = context.getContainer().resolve(ctrlClass)
 
-        return await ctrl.run(payload, context)
+        const apiInfo: ApiInfo | undefined = getMetadataApi(ctrl.constructor)
+        if (!apiInfo) {
+            throw new AppError(InternalError).withMessage(`No Api decorator on ${ctrl.constructor}`)
+        }
+
+        if (apiInfo.guard) {
+            const guard = context.getContainer().resolve<Guard>(apiInfo.guard)
+            await guard.canActivate(payload, apiInfo.security, context)
+        }
+
+        if (apiInfo.input) {
+            const errMsg = validate(apiInfo.input, payload.body)
+            if (errMsg) {
+                throw new AppError(ValidateError).withMessage(errMsg)
+            }
+
+            return await ctrl.handle(payload.body, context)
+        }
+
+        return await ctrl.handle(undefined, context)
     }
 }

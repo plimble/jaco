@@ -1,18 +1,16 @@
 import {validate} from '../lib/validator'
-import {Validate} from '../lib/decorators/validate'
-import {Schema} from '../lib/decorators/schema'
+import {Field} from '../lib/field-decorator'
 
 describe('IsNumber', () => {
-    @Validate()
     class NumData {
-        @Schema({
+        @Field({
             type: 'number',
             enum: [1, 2],
             format: 'money',
         })
         num!: number
 
-        @Schema({
+        @Field({
             type: 'number',
             optional: true,
         })

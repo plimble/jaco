@@ -1,18 +1,15 @@
 import {validate} from '../lib/validator'
-import {Validate} from '../lib/decorators/validate'
-import {Schema} from '../lib/decorators/schema'
+import {Field} from '../lib/field-decorator'
 
 describe('IsMap', () => {
     describe('Map class', () => {
-        @Validate()
         class MapClassNestedData {
-            @Schema({type: 'string'})
+            @Field({type: 'string'})
             name!: string
         }
 
-        @Validate()
         class MapClassData {
-            @Schema({
+            @Field({
                 type: 'map',
                 value: {type: 'object', ref: MapClassNestedData},
                 minProperties: 1,

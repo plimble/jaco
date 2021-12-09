@@ -1,30 +1,27 @@
 import {Profile} from './profile'
-import {Schema, Validate} from '@onedaycat/jaco-validator'
+import {Field} from '@onedaycat/jaco-validator'
 
 export enum AccountType {
     USER = 'USER',
     ADMIN = 'ADMIN',
 }
 
-@Validate({
-    description: 'Account model',
-})
 export class Account {
-    @Schema({type: 'string', enum: ['1', '2']})
+    @Field({type: 'string', enum: ['1', '2']})
     id = ''
 
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     name = ''
 
-    @Schema({type: 'number', format: 'timestamp'})
+    @Field({type: 'number', format: 'timestamp'})
     createdAt = 0
 
-    @Schema({type: 'object', ref: Profile})
+    @Field({type: 'object', ref: Profile})
     profile: Profile = new Profile()
 
-    @Schema({type: 'string', enum: AccountType})
+    @Field({type: 'string', enum: AccountType})
     type: AccountType = AccountType.USER
 
-    @Schema({type: 'any', deprecated: true})
+    @Field({type: 'any', deprecated: true})
     deprecated: any
 }

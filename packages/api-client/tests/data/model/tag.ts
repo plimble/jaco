@@ -1,10 +1,9 @@
-import {Schema, Validate} from '@onedaycat/jaco-validator'
+import {Field} from '@onedaycat/jaco-validator'
 
-@Validate()
 export class Tag {
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     id = ''
 
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     name = ''
 }

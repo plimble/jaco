@@ -1,20 +1,19 @@
 import {Tag} from './tag'
-import {Schema, Validate} from '@onedaycat/jaco-validator'
+import {Field} from '@onedaycat/jaco-validator'
 
-@Validate()
 export class Profile {
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     email = ''
 
-    @Schema({type: 'number', optional: true})
+    @Field({type: 'number', optional: true})
     mobile?: number
 
-    @Schema({type: 'boolean'})
+    @Field({type: 'boolean'})
     isPublic = false
 
-    @Schema({type: 'array', items: {type: 'object', ref: Tag}})
+    @Field({type: 'array', items: {type: 'object', ref: Tag}})
     tags: Tag[] = []
 
-    @Schema({type: 'array', items: {type: 'string'}})
+    @Field({type: 'array', items: {type: 'string'}})
     addresses: string[] = []
 }

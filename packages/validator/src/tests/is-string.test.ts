@@ -1,20 +1,18 @@
 import {validate} from '../lib/validator'
-import {Validate} from '../lib/decorators/validate'
-import {Schema} from '../lib/decorators/schema'
+import {Field} from '../lib/field-decorator'
 
 describe('IsString', () => {
-    @Validate()
     class StrData {
-        @Schema({type: 'string'})
+        @Field({type: 'string'})
         num!: string
 
-        @Schema({
+        @Field({
             type: 'string',
             optional: true,
         })
         numop?: string
 
-        @Schema({
+        @Field({
             type: 'string',
             optional: true,
             allowEmpty: true,
@@ -48,15 +46,14 @@ describe('IsString', () => {
     })
 
     describe('format', () => {
-        @Validate()
         class StrFormatData {
-            @Schema({
+            @Field({
                 type: 'string',
                 format: 'date',
             })
             num!: string
 
-            @Schema({
+            @Field({
                 type: 'string',
                 format: 'date-time',
             })
@@ -81,15 +78,14 @@ describe('IsString', () => {
             B = 'b',
         }
 
-        @Validate()
         class StrEnumData {
-            @Schema({
+            @Field({
                 type: 'string',
                 enum: ['1', '2'],
             })
             num!: string
 
-            @Schema({
+            @Field({
                 type: 'string',
                 enum: StrEnum,
             })

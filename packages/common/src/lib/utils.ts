@@ -1,5 +1,6 @@
 import copy from 'fast-copy'
 import {deepEqual as fastDeepEqual} from 'fast-equals'
+import {Constructor} from './types'
 
 export function chunkArray<T>(arr: T[], size: number): T[][] {
     const arrT: T[][] = []
@@ -11,7 +12,7 @@ export function chunkArray<T>(arr: T[], size: number): T[][] {
 }
 
 export function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms))
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 export function deepClone<T = any>(data: T, isStrict = false): T {
@@ -48,4 +49,8 @@ const regEx = /[`~!@#$%^&*()_|+\-=?;:'",.<>{}[\]\\/]/g
 
 export function removeSpecialChar(str: string) {
     return str.replace(regEx, ' ').split(' ').filter(Boolean).join(' ')
+}
+
+export function createClass<T>(c: Constructor<T>, data: T): T {
+    return Object.assign(new c(), data) as T
 }

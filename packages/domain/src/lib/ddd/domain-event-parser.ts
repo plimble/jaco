@@ -4,16 +4,16 @@ import {DomainEvent, ParsedDomainEvent} from './domain-event'
 
 @Singleton()
 export class DomainEventParser {
-    onParseRequestError(err: AppError): void {
-        throw err
+    onParseRequestError(err: AppError): any {
+        return err
     }
 
-    parseResponse(payload: any): void {
-        return payload
+    parseResponse(): void {
+        return undefined
     }
 
-    parseErrorResponse(err: AppError): void {
-        throw err
+    parseErrorResponse(err: AppError): any {
+        return err
     }
 
     parseRequest(input: any): ParsedDomainEvent[] {

@@ -1,17 +1,15 @@
 import {validate} from '../lib/validator'
-import {Validate} from '../lib/decorators/validate'
-import {Schema} from '../lib/decorators/schema'
+import {Field} from '../lib/field-decorator'
 
 describe('IsArray', () => {
-    @Validate()
     class ArrayData {
-        @Schema({
+        @Field({
             type: 'array',
             items: {type: 'string', minLength: 1},
         })
         num!: string[]
 
-        @Schema({
+        @Field({
             type: 'array',
             optional: true,
             items: {type: 'string'},
@@ -39,15 +37,13 @@ describe('IsArray', () => {
     })
 
     describe('Array class', () => {
-        @Validate()
         class ArrayClassNestedData {
-            @Schema({type: 'string'})
+            @Field({type: 'string'})
             name!: string
         }
 
-        @Validate()
         class ArrayClassData {
-            @Schema({
+            @Field({
                 type: 'array',
                 items: {type: 'object', ref: ArrayClassNestedData},
                 minItems: 1,

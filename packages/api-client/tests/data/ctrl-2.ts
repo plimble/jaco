@@ -7,7 +7,7 @@ import {Maintenance} from '@onedaycat/jaco-common'
     output: Profile,
     errors: [Maintenance],
 })
-export class Ctrl2 extends Controller {
+export class Ctrl2 implements Controller {
     async handle(body: undefined, context: Context): Promise<ApiResponse> {
         return {
             body: undefined,

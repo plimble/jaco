@@ -19,8 +19,9 @@ export class App {
             try {
                 const timeout = (context.getRemainingTimeInMillis() - 3) * 1000
 
-                return await app.invokeWithTimeout(
+                const result = await app.invokeWithTimeout<any>(
                     {
+                        requestId: context.awsRequestId,
                         functionName: context.functionName,
                         timeout: timeout > 0 ? timeout : undefined,
                         payload: undefined,
@@ -28,14 +29,19 @@ export class App {
                     },
                     new Context(),
                 )
+
+                if (result instanceof AppError) {
+                    result.name = result.code
+
+                    return Promise.reject(result)
+                }
+
+                return result
             } catch (e) {
                 const err = wrapError(e)
+                err.name = err.code
 
-                return {
-                    errorType: err.code,
-                    errorMessage: err.message,
-                    trace: err.stack,
-                }
+                return Promise.reject(err)
             }
         }
     }
@@ -69,7 +75,7 @@ export class App {
         this.errorHandlers.push(...errorHandlers)
     }
 
-    async invokeWithTimeout<T>(req: Req<T>, context: Context): Promise<T> {
+    async invokeWithTimeout<T>(req: Req<T>, context: Context): Promise<T | AppError> {
         if (!req.timeout) {
             return this.invoke(req, context)
         }
@@ -88,8 +94,23 @@ export class App {
         return result
     }
 
-    async invoke<T>(req: Req<T>, context?: Context): Promise<T> {
+    async invoke<T>(req: Req<T>, context?: Context): Promise<T | AppError> {
         if (!context) context = new Context()
+        context.setData<Req>(REQUEST_CONTEXT, req)
+
+        try {
+            const mdws = this.getMiddlewares()
+            if (mdws.length) {
+                return await mdws[0].use(req, context, this.next(mdws, context, req, 1))
+            } else {
+                return await this.handle(req, context)
+            }
+        } catch (e) {
+            return await this.handleErrors(wrapError(e), context)
+        }
+    }
+
+    private async handle(req: Req, context: Context): Promise<any> {
         if (req.raw) {
             try {
                 req.payload = await this.eventParser.parseRequest(req.raw, context)
@@ -99,32 +120,20 @@ export class App {
                 return this.eventParser.onParseRequestError(err, context)
             }
         }
-        context.setData<Req>(REQUEST_CONTEXT, req)
-
-        const result = await this.run(req, context)
-        if (result instanceof AppError) {
-            return this.eventParser.parseErrorResponse(result, context)
-        }
 
         try {
-            return this.eventParser.parseResponse(result, context)
+            const result = await this.handler.handle(req.payload, context)
+            if (result instanceof AppError) {
+                const err = await this.handleErrors(result, context)
+
+                return this.eventParser.parseErrorResponse(err, context)
+            } else {
+                return this.eventParser.parseResponse(result, context)
+            }
         } catch (e) {
             const err = await this.handleErrors(wrapError(e), context)
 
             return this.eventParser.parseErrorResponse(err, context)
-        }
-    }
-
-    private async run(req: Req, context: Context): Promise<any> {
-        try {
-            const mdws = this.getMiddlewares()
-            if (mdws.length) {
-                return await mdws[0].use(req, context, this.next(mdws, context, req, 1))
-            } else {
-                return await this.handler.handle(req.payload, context)
-            }
-        } catch (e) {
-            return await this.handleErrors(wrapError(e), context)
         }
     }
 

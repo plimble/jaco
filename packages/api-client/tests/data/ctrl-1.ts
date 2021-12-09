@@ -7,7 +7,7 @@ import {InternalError, Unauthorized} from '@onedaycat/jaco-common'
     output: Account,
     errors: [InternalError, Unauthorized],
 })
-export class Ctrl1 extends Controller {
+export class Ctrl1 implements Controller {
     async handle(body: undefined, context: Context): Promise<ApiResponse> {
         return {
             body: undefined,
