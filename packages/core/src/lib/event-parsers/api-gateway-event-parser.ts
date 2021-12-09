@@ -100,15 +100,15 @@ export class ApiGatewayEventParser implements EventParser {
         }
     }
 
-    parseResponse(payload: ApiResponse, context: Context): APIGatewayProxyResult {
-        let result = payload.body
+    parseResponse(payload: any, context: Context): APIGatewayProxyResult {
+        let result = payload.body ?? payload
         if (ApiGatewayEventParser.warpSuccess) {
-            result = {[ApiGatewayEventParser.warpSuccess]: payload.body}
+            result = {[ApiGatewayEventParser.warpSuccess]: result}
         }
 
         return {
             statusCode: payload.status ?? 200,
-            body: JSON.stringify(result),
+            body: typeof result === 'string' ? result : JSON.stringify(result),
             headers: ApiGatewayEventParser.mergeHeaders(payload.headers),
         }
     }

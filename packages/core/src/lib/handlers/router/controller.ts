@@ -1,6 +1,5 @@
 import {AppErrorInfo, Constructor} from '@onedaycat/jaco-common'
 import {Context} from '../../context'
-import {ApiResponse} from '../../event-parsers/api-gateway-event-parser'
 import {Guard} from './guard'
 import {CTRL_KEY} from './metadata-storage'
 
@@ -22,5 +21,5 @@ export function Api(info: ApiInfo): (target: any) => any {
 }
 
 export interface Controller {
-    handle(body: any, context: Context): Promise<ApiResponse>
+    handle(body: any, context: Context): Promise<any>
 }
