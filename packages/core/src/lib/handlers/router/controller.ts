@@ -7,7 +7,7 @@ export interface ApiInfo {
     input?: Constructor<any>
     output: Constructor<any>
     security?: any
-    guard?: Constructor<Guard>
+    guards?: Constructor<Guard>[]
     description?: string
     errors?: AppErrorInfo[]
 }

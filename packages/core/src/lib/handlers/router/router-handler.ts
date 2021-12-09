@@ -29,9 +29,11 @@ export class RouterHandler implements Handler {
             throw new AppError(InternalError).withMessage(`No Api decorator on ${ctrl.constructor}`)
         }
 
-        if (apiInfo.guard) {
-            const guard = context.getContainer().resolve<Guard>(apiInfo.guard)
-            await guard.canActivate(payload, apiInfo.security, context)
+        if (apiInfo.guards) {
+            for (const appInfoGuard of apiInfo.guards) {
+                const guard = context.getContainer().resolve<Guard>(appInfoGuard)
+                await guard.canActivate(payload, apiInfo.security, context)
+            }
         }
 
         if (apiInfo.input) {
