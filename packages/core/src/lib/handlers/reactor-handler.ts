@@ -2,7 +2,7 @@ import {AppError, Constructor, wrapError} from '@onedaycat/jaco-common'
 import {Handler} from '../handler'
 import {Context} from '../context'
 
-export interface RactorSetup {
+export interface ReactorSetup {
     reactor: Constructor<Reactor>
     events: string[]
 }
@@ -49,7 +49,7 @@ async function handleErrorAll(
 }
 
 export class ReactorHandler implements Handler {
-    constructor(private eventSetups: RactorSetup[]) {}
+    constructor(private eventSetups: ReactorSetup[]) {}
 
     async handle(events: any, context: Context): Promise<void> {
         const container = context.getContainer()
