@@ -1,10 +1,10 @@
-import {Clock, IdGen} from '@onedaycat/jaco-common'
+import {Clock, Constructor, IdGen} from '@onedaycat/jaco-common'
 
 export class DomainEvent<T = any> {
     static TYPE = ''
 
     id: string
-    type = ''
+    type: string
     payload: T
     time: number
 
@@ -21,6 +21,6 @@ export interface ParsedDomainEvent<T extends DomainEvent = DomainEvent> {
     seqNumber: string
 }
 
-export function isDomainEvent<T extends DomainEvent<any>>(event: any, type: T['type']): event is T {
-    return event.type === type
+export function isDomainEvent<T extends DomainEvent>(event: any, domainEvent: Constructor<T>): event is T {
+    return event.type === (domainEvent as any).TYPE
 }

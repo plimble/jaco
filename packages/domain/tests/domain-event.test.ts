@@ -32,7 +32,7 @@ describe('DomainEvent', () => {
             type: 'test',
         })
 
-        expect(isDomainEvent(event, TestEvent.TYPE)).toBe(true)
-        expect(isDomainEvent(event, BadEvent.TYPE)).toBe(false)
+        expect(isDomainEvent(event, TestEvent)).toBe(true)
+        expect(isDomainEvent(event, BadEvent)).toBe(false)
     })
 })
