@@ -5,9 +5,10 @@ const ATTRIBUTE_KEY = Symbol('jaco:attr')
 
 interface AttributeMetadata {
     props: Record<string | symbol, AttributeInfo>
+    init?: string
 }
 
-type TransformFn = (value: any) => any
+type TransformFn = (value: any, data: any) => any
 
 export interface AttributeOptions {
     toModel?: TransformFn
@@ -25,6 +26,16 @@ export function Attribute(options?: AttributeOptions): PropertyDecorator {
 
         const metadata: AttributeMetadata = Reflect.getMetadata(ATTRIBUTE_KEY, target.constructor) ?? {props: {}}
         metadata.props[key] = {type: 'any', options}
+        Reflect.defineMetadata(ATTRIBUTE_KEY, metadata, target.constructor)
+    }
+}
+
+export function Init(): PropertyDecorator {
+    return function (target: any, key?: string | symbol) {
+        if (!key) return
+
+        const metadata: AttributeMetadata = Reflect.getMetadata(ATTRIBUTE_KEY, target.constructor) ?? {props: {}}
+        metadata.init = key as string
         Reflect.defineMetadata(ATTRIBUTE_KEY, metadata, target.constructor)
     }
 }
@@ -89,11 +100,11 @@ export function unmarshallAttributes<T>(modelClass: Constructor<T>, data: Record
     const model = new modelClass() as Record<string, any>
 
     for (const [key, val] of Object.entries(data)) {
-        model[key] = unmarshall(val, metadata.props[key])
+        model[key] = unmarshall(data, val, metadata.props[key])
     }
 
-    if (model.init && typeof model.init === 'function') {
-        model.init()
+    if (metadata.init && model[metadata.init] && typeof model[metadata.init] === 'function') {
+        model[metadata.init]()
     }
 
     return model as T
@@ -138,44 +149,44 @@ function marshall(value: any, info: AttributeInfo): any {
     return value
 }
 
-function unmarshall(value: any, info: AttributeInfo): any {
+function unmarshall(data: any, value: any, info: AttributeInfo): any {
     const toModel = info.options?.toModel
 
     switch (info.type) {
         case 'map': {
-            if (value == null) return transform(value, toModel)
+            if (value == null) return transform(data, value, toModel)
 
             const result = new Map<string, any>()
             for (const [key, val] of Object.entries(value)) {
                 result.set(
                     key,
                     info.ref && val != null
-                        ? unmarshallAttributes(info.ref, transform(val, toModel))
-                        : transform(val, toModel),
+                        ? unmarshallAttributes(info.ref, transform(data, val, toModel))
+                        : transform(data, val, toModel),
                 )
             }
 
             return result
         }
         case 'set': {
-            if (value == null) return transform(value, toModel)
+            if (value == null) return transform(data, value, toModel)
 
             const result = new Set<any>()
             for (const val of value as any[]) {
-                result.add(transform(val, toModel))
+                result.add(transform(data, val, toModel))
             }
 
             return result
         }
         case 'array': {
-            if (value == null) return transform(value, toModel)
+            if (value == null) return transform(data, value, toModel)
 
             const result: any[] = []
             for (const val of value as any[]) {
                 result.push(
                     info.ref && val != null
-                        ? unmarshallAttributes(info.ref, transform(val, toModel))
-                        : transform(val, toModel),
+                        ? unmarshallAttributes(info.ref, transform(data, val, toModel))
+                        : transform(data, val, toModel),
                 )
             }
 
@@ -183,16 +194,16 @@ function unmarshall(value: any, info: AttributeInfo): any {
         }
         case 'object': {
             return info.ref && value != null
-                ? unmarshallAttributes(info.ref, transform(value, toModel))
-                : transform(value, toModel)
+                ? unmarshallAttributes(info.ref, transform(data, value, toModel))
+                : transform(data, value, toModel)
         }
     }
 
-    return transform(value, toModel)
+    return transform(data, value, toModel)
 }
 
-function transform(val: any, fn?: TransformFn): any {
-    if (fn) return fn(val)
+function transform(data: any, val: any, fn: TransformFn | undefined): any {
+    if (fn) return fn(val, data)
 
     return val
 }

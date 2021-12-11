@@ -1,4 +1,4 @@
-import {Aggregate, Entity, marshallAttributes, unmarshallAttributes} from '@onedaycat/jaco-domain'
+import {Aggregate, Entity, Init, marshallAttributes, unmarshallAttributes} from '@onedaycat/jaco-domain'
 import {
     ArrayAttribute,
     Attribute,
@@ -11,6 +11,8 @@ describe('AggregateRepo', () => {
     class En extends Entity {
         @Attribute()
         id = 'e1'
+
+        hidden = 0
     }
 
     class Agg extends Aggregate {
@@ -40,6 +42,13 @@ describe('AggregateRepo', () => {
             },
         })
         toDb: En = new En()
+
+        hidden = 0
+
+        @Init()
+        init() {
+            this.hidden = 1
+        }
     }
 
     test('Parse', async () => {
@@ -67,6 +76,7 @@ describe('AggregateRepo', () => {
 
         const model2 = unmarshallAttributes(Agg, data1)
         model1.toDb.id = '10'
+        model1.hidden = 1
         expect(model2).toEqual(model1)
     })
 })
