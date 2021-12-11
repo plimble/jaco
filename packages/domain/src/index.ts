@@ -1,4 +1,5 @@
 export * from './lib/ddd/aggregate'
+export * from './lib/ddd/attribute-decorator'
 export * from './lib/ddd/domain-event'
 export * from './lib/ddd/domain-event-parser'
 export * from './lib/ddd/entity'

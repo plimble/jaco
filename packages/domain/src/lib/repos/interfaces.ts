@@ -1,7 +1,7 @@
 import {ExpressionAttributeNameMap, ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
 import {DynamoDBx} from '@onedaycat/jaco-awsx'
 import {Aggregate} from '../ddd/aggregate'
-import {Entity} from '../ddd/entity'
+import {Constructor} from '@onedaycat/jaco-common'
 
 export type IndexMapper<T> = (model: T) => IndexData
 export type CustomFields<T> = (model: T) => CustomData
@@ -80,11 +80,10 @@ export interface MultiGetByIndexInput {
 }
 
 export interface AggregateRepoOptions<T extends Aggregate> {
+    aggregate: Constructor<T>
     aggregateType: string
     tableName: string
     db: DynamoDBx
-    toAggregate: AggregateFactory<T>
-    toDbModel: DbAggregateFactory<T>
     indexMapper: IndexMapper<T>
     indexName?: IndexName
     deleteCondition?: string
@@ -108,15 +107,13 @@ export type ScanAllHandler<T> = (items: T[]) => Promise<void>
 
 export interface Model {
     getId(): string
-    toJSON(): any
 }
 
-export interface QueryRepoOptions<T extends Entity> {
+export interface QueryRepoOptions<T extends Model> {
+    model: Constructor<T>
     modelType: string
     tableName: string
     db: DynamoDBx
-    toEntity: EntityFactory<T>
-    toDbModel: DbEntityFactory<T>
     indexMapper: IndexMapper<T>
     indexName?: IndexName
     saveCondition?: string

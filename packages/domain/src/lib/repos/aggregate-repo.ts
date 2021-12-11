@@ -1,11 +1,9 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
 
 import {
-    AggregateFactory,
     AggregateRepoOptions,
     CustomFields,
     DbAggregate,
-    DbAggregateFactory,
     DDBDeleteKey,
     DDBScanItem,
     GetAllByIndexInput,
@@ -22,17 +20,17 @@ import {
     ScanOutput,
 } from './interfaces'
 import {container} from 'tsyringe'
-import {AppError, Clock, InternalError, wrapError} from '@onedaycat/jaco-common'
+import {AppError, Clock, Constructor, InternalError, wrapError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 import {Aggregate} from '../ddd/aggregate'
 import {EventPublisher} from '../event-publisher/event-publisher'
+import {marshallAttributes, unmarshallAttributes} from '../ddd/attribute-decorator'
 
 export abstract class AggregateRepo<T extends Aggregate> {
+    protected aggregate: Constructor<T>
     protected aggregateType: string
     protected tableName: string
     protected db: DynamoDBx
-    protected toAggregate: AggregateFactory<T>
-    protected toDbModel: DbAggregateFactory<T>
     protected indexMapper: IndexMapper<T>
     protected customerFields?: CustomFields<T>
     protected indexName?: IndexName
@@ -42,11 +40,10 @@ export abstract class AggregateRepo<T extends Aggregate> {
     private index = new Map<string, string>()
 
     protected constructor(options: AggregateRepoOptions<T>) {
+        this.aggregate = options.aggregate
         this.aggregateType = options.aggregateType
         this.tableName = options.tableName
         this.db = options.db
-        this.toAggregate = options.toAggregate
-        this.toDbModel = options.toDbModel
         this.indexMapper = options.indexMapper
         this.indexName = options.indexName
         this.deleteCondition = options.deleteCondition
@@ -352,7 +349,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             }
         }
 
-        const ddbModel = this.toDbModel(agg)
+        const ddbModel: DbAggregate = {
+            state: marshallAttributes(this.aggregate, agg),
+            version: agg.version,
+            time: agg.time,
+        }
 
         const payloadItem = DynamoDBx.marshall(ddbModel, payloadExtra)
 
@@ -466,7 +467,10 @@ export abstract class AggregateRepo<T extends Aggregate> {
         for (const item of result.Items) {
             const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
             if (aggPayload.rk.startsWith(this.aggregateType)) {
-                items.push(this.toAggregate(aggPayload as any))
+                const item = unmarshallAttributes(this.aggregate, aggPayload.state)
+                item.version = aggPayload.version
+                item.time = aggPayload.time
+                items.push(item)
             }
         }
 
@@ -491,7 +495,10 @@ export abstract class AggregateRepo<T extends Aggregate> {
             for (const item of result.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
                 if (aggPayload.rk.startsWith(this.aggregateType)) {
-                    items.push(this.toAggregate(aggPayload as any))
+                    const item = unmarshallAttributes(this.aggregate, aggPayload.state)
+                    item.version = aggPayload.version
+                    item.time = aggPayload.time
+                    items.push(item)
                 }
             }
 
@@ -555,8 +562,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             items
                 .map<T>(item => {
                     const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
+                    const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                    agg.version = aggPayload.version
+                    agg.time = aggPayload.time
 
-                    return this.toAggregate(aggPayload)
+                    return agg
                 })
                 .forEach(s => {
                     aggs[s.id] = s
@@ -589,7 +599,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             const aggs: T[] = []
             for (const item of items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
-                aggs.push(this.toAggregate(aggPayload))
+                const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                agg.version = aggPayload.version
+                agg.time = aggPayload.time
+
+                aggs.push(agg)
             }
 
             return aggs
@@ -626,7 +640,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             const aggs: T[] = []
             for (const item of res.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
-                aggs.push(this.toAggregate(aggPayload))
+                const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                agg.version = aggPayload.version
+                agg.time = aggPayload.time
+
+                aggs.push(agg)
             }
 
             return {items: aggs, nextToken: res.NextToken}
@@ -665,7 +683,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             const aggs: T[] = []
             for (const item of res.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
-                aggs.push(this.toAggregate(aggPayload))
+                const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                agg.version = aggPayload.version
+                agg.time = aggPayload.time
+
+                aggs.push(agg)
             }
 
             return {items: aggs, nextToken: res.NextToken}
@@ -697,7 +719,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             const aggs: T[] = []
             for (const item of items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
-                aggs.push(this.toAggregate(aggPayload))
+                const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                agg.version = aggPayload.version
+                agg.time = aggPayload.time
+
+                aggs.push(agg)
             }
 
             return aggs
@@ -732,8 +758,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             items
                 .map<T>(item => {
                     const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
+                    const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
+                    agg.version = aggPayload.version
+                    agg.time = aggPayload.time
 
-                    return this.toAggregate(aggPayload)
+                    return agg
                 })
                 .forEach(s => {
                     aggs[s.id] = s
@@ -766,8 +795,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             }
 
             const payload = DynamoDBx.unmarshall<DbAggregate>(items[0])
+            const agg = unmarshallAttributes(this.aggregate, payload.state)
+            agg.version = payload.version
+            agg.time = payload.time
 
-            return this.toAggregate(payload)
+            return agg
         } catch (e) {
             throw new AppError(InternalError).withCause(e)
         }
@@ -810,8 +842,11 @@ export abstract class AggregateRepo<T extends Aggregate> {
             }
 
             const payload = DynamoDBx.unmarshall<DbAggregate>(item)
+            const agg = unmarshallAttributes(this.aggregate, payload.state)
+            agg.version = payload.version
+            agg.time = payload.time
 
-            return this.toAggregate(payload)
+            return agg
         } catch (e) {
             throw new AppError(InternalError).withCause(e)
         }

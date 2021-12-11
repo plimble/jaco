@@ -1,16 +1,15 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
 import {
     CustomFields,
-    DbEntityFactory,
     DDBDeleteKey,
     DDBScanItem,
-    EntityFactory,
     GetAllByIndexInput,
     GetByIndexInput,
     GetPageByIndexInput,
     GetPageInput,
     IndexMapper,
     IndexName,
+    Model,
     MultiGetByIndexInput,
     PageOutput,
     QueryDataModel,
@@ -19,16 +18,15 @@ import {
     ScanAllHandler,
     ScanOutput,
 } from './interfaces'
-import {AppError, Clock, InternalError} from '@onedaycat/jaco-common'
+import {AppError, Clock, Constructor, InternalError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
-import {Entity} from '../ddd/entity'
+import {marshallAttributes, unmarshallAttributes} from '../ddd/attribute-decorator'
 
-export abstract class QueryRepo<T extends Entity> {
+export abstract class QueryRepo<T extends Model> {
+    protected model: Constructor<T>
     protected modelType: string
     protected tableName: string
     protected db: DynamoDBx
-    protected toEntity: EntityFactory<T>
-    protected toDbModel: DbEntityFactory<T>
     protected indexMapper: IndexMapper<T>
     protected indexName?: IndexName
     protected customerFields?: CustomFields<T>
@@ -38,11 +36,10 @@ export abstract class QueryRepo<T extends Entity> {
     private index = new Map<string, string>()
 
     protected constructor(options: QueryRepoOptions<T>) {
+        this.model = options.model
         this.modelType = options.modelType
         this.tableName = options.tableName
         this.db = options.db
-        this.toEntity = options.toEntity
-        this.toDbModel = options.toDbModel
         this.indexMapper = options.indexMapper
         this.indexName = options.indexName
         this.saveCondition = options.saveCondition
@@ -323,7 +320,7 @@ export abstract class QueryRepo<T extends Entity> {
                 TableName: this.tableName,
                 Key: {
                     hk: {S: indexData.hashKey},
-                    rk: {S: `${this.modelType}-${model.id}`},
+                    rk: {S: `${this.modelType}-${model.getId()}`},
                 },
                 ConditionExpression: this.deleteCondition,
             })
@@ -411,7 +408,7 @@ export abstract class QueryRepo<T extends Entity> {
         for (const item of result.Items) {
             const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
             if (aggPayload.rk.startsWith(this.modelType)) {
-                items.push(this.toEntity(aggPayload))
+                items.push(unmarshallAttributes(this.model, aggPayload.state))
             }
         }
 
@@ -436,7 +433,7 @@ export abstract class QueryRepo<T extends Entity> {
             for (const item of result.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
                 if (aggPayload.rk.startsWith(this.modelType)) {
-                    items.push(this.toEntity(aggPayload.state))
+                    items.push(unmarshallAttributes(this.model, aggPayload.state))
                 }
             }
 
@@ -462,7 +459,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             if (result.items.length) {
                 for (const item of result.items) {
-                    keys.push({hashKey: hashKey, id: item.id})
+                    keys.push({hashKey: hashKey, id: item.getId()})
                 }
             }
 
@@ -494,7 +491,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             const data = DynamoDBx.unmarshall<QueryDataModel>(item)
 
-            return this.toEntity(data.state)
+            return unmarshallAttributes(this.model, data.state)
         } catch (e) {
             throw new AppError(InternalError).withCause(e)
         }
@@ -525,10 +522,10 @@ export abstract class QueryRepo<T extends Entity> {
                 .map<T>(item => {
                     const data = DynamoDBx.unmarshall<QueryDataModel>(item)
 
-                    return this.toEntity(data.state)
+                    return unmarshallAttributes(this.model, data.state)
                 })
                 .forEach(s => {
-                    aggs[s.id] = s
+                    aggs[s.getId()] = s
                 })
 
             return aggs
@@ -564,10 +561,10 @@ export abstract class QueryRepo<T extends Entity> {
                 .map<T>(item => {
                     const data = DynamoDBx.unmarshall<QueryDataModel>(item)
 
-                    return this.toEntity(data.state)
+                    return unmarshallAttributes(this.model, data.state)
                 })
                 .forEach(s => {
-                    aggs[s.id] = s
+                    aggs[s.getId()] = s
                 })
 
             return aggs
@@ -597,7 +594,7 @@ export abstract class QueryRepo<T extends Entity> {
             const aggs: T[] = []
             for (const item of items) {
                 const data = DynamoDBx.unmarshall<QueryDataModel>(item)
-                aggs.push(this.toEntity(data.state))
+                aggs.push(unmarshallAttributes(this.model, data.state))
             }
 
             return aggs
@@ -636,7 +633,7 @@ export abstract class QueryRepo<T extends Entity> {
             const aggs: T[] = []
             for (const item of res.Items) {
                 const data = DynamoDBx.unmarshall<QueryDataModel>(item)
-                aggs.push(this.toEntity(data.state))
+                aggs.push(unmarshallAttributes(this.model, data.state))
             }
 
             return {items: aggs, nextToken: res.NextToken}
@@ -673,7 +670,7 @@ export abstract class QueryRepo<T extends Entity> {
             const aggs: T[] = []
             for (const item of res.Items) {
                 const data = DynamoDBx.unmarshall<QueryDataModel>(item)
-                aggs.push(this.toEntity(data.state))
+                aggs.push(unmarshallAttributes(this.model, data.state))
             }
 
             return {items: aggs, nextToken: res.NextToken}
@@ -705,7 +702,7 @@ export abstract class QueryRepo<T extends Entity> {
             const aggs: T[] = []
             for (const item of items) {
                 const data = DynamoDBx.unmarshall<QueryDataModel>(item)
-                aggs.push(this.toEntity(data.state))
+                aggs.push(unmarshallAttributes(this.model, data.state))
             }
 
             return aggs
@@ -737,7 +734,7 @@ export abstract class QueryRepo<T extends Entity> {
 
             const data = DynamoDBx.unmarshall<QueryDataModel>(items[0])
 
-            return this.toEntity(data.state)
+            return unmarshallAttributes(this.model, data.state)
         } catch (e) {
             throw new AppError(InternalError).withCause(e)
         }
@@ -747,7 +744,7 @@ export abstract class QueryRepo<T extends Entity> {
         const indexData = this.indexMapper(model)
 
         const payloadExtra: Record<string, any> = {
-            rk: `${this.modelType}-${model.id}`,
+            rk: `${this.modelType}-${model.getId()}`,
         }
 
         for (const [indexName, value] of Object.entries(indexData)) {
@@ -771,7 +768,7 @@ export abstract class QueryRepo<T extends Entity> {
             }
         }
 
-        return DynamoDBx.marshall({state: this.toDbModel(model)}, payloadExtra)
+        return DynamoDBx.marshall({state: marshallAttributes(this.model, model)}, payloadExtra)
     }
 
     private initIndex() {
