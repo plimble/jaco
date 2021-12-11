@@ -1,10 +1,19 @@
 import {Clock, IdGen} from '@onedaycat/jaco-common'
 
-export interface DomainEvent<T extends string = any, K = any> {
+export class DomainEvent<T = any> {
+    static TYPE = ''
+
     id: string
-    type: T
-    payload: K
+    type = ''
+    payload: T
     time: number
+
+    constructor(type: string, payload: T, id?: string, time?: number) {
+        this.id = id ?? IdGen.generate()
+        this.time = time ?? Clock.new()
+        this.payload = payload
+        this.type = type
+    }
 }
 
 export interface ParsedDomainEvent<T extends DomainEvent = DomainEvent> {
@@ -12,15 +21,6 @@ export interface ParsedDomainEvent<T extends DomainEvent = DomainEvent> {
     seqNumber: string
 }
 
-export function isDomainEvent<T extends DomainEvent>(event: any, type: T['type']): event is T {
+export function isDomainEvent<T extends DomainEvent<any>>(event: any, type: T['type']): event is T {
     return event.type === type
-}
-
-export function createDomainEvent<T extends DomainEvent = DomainEvent>(type: T['type'], payload: T['payload']): T {
-    return {
-        id: IdGen.generate(),
-        type: type,
-        payload: payload,
-        time: Clock.new(),
-    } as T
 }
