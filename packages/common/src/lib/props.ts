@@ -36,3 +36,5 @@ export type Dto<T> = IsFunction<T> extends true
     : IsOptional<T> extends true
     ? Dtoified<Exclude<T, undefined>> | null
     : Dtoified<T>
+
+export type Props<T> = {[K in keyof ExcludeFuncsFromObj<T>]: T[K]}
