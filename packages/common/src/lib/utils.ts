@@ -45,6 +45,15 @@ export function listToRecord<T>(arr: T[], keyFn: (data: T) => string): Record<st
     return result
 }
 
+export function mapToRecord<T extends string | number, K>(map: Map<T, K>): Record<T, K> {
+    const result: Record<T, K> = {} as any
+    for (const [key, item] of map) {
+        result[key] = item
+    }
+
+    return result
+}
+
 const regEx = /[`~!@#$%^&*()_|+\-=?;:'",.<>{}[\]\\/]/g
 
 export function removeSpecialChar(str: string) {
