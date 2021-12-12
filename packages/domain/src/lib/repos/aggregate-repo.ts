@@ -317,7 +317,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
         }
 
         if (options?.autoVersion) {
-            agg.version = agg.version + 1
+            agg.setVersion(agg.getVersion() + 1)
         }
 
         const committedEvents = agg.getEvents()
@@ -351,8 +351,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
         const ddbModel: DbAggregate = {
             state: marshallAttributes(this.aggregate, agg),
-            version: agg.version,
-            time: agg.time,
+            version: agg.getVersion(),
+            time: agg.getTime(),
         }
 
         const payloadItem = DynamoDBx.marshall(ddbModel, payloadExtra)
@@ -366,7 +366,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
                     ? undefined
                     : 'attribute_not_exists(version) or (attribute_exists(version) and version < :v)',
                 ExpressionAttributeValues: {
-                    ':v': {N: agg.version.toString()},
+                    ':v': {N: agg.getVersion().toString()},
                 },
             },
         })
@@ -468,8 +468,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
             const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
             if (aggPayload.rk.startsWith(this.aggregateType)) {
                 const item = unmarshallAttributes(this.aggregate, aggPayload.state)
-                item.version = aggPayload.version
-                item.time = aggPayload.time
+                item.setVersion(aggPayload.version)
+                item.setTime(aggPayload.time)
                 items.push(item)
             }
         }
@@ -496,8 +496,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 const aggPayload = DynamoDBx.unmarshall<DDBScanItem>(item)
                 if (aggPayload.rk.startsWith(this.aggregateType)) {
                     const item = unmarshallAttributes(this.aggregate, aggPayload.state)
-                    item.version = aggPayload.version
-                    item.time = aggPayload.time
+                    item.setVersion(aggPayload.version)
+                    item.setTime(aggPayload.time)
                     items.push(item)
                 }
             }
@@ -563,8 +563,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 .map<T>(item => {
                     const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                     const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                    agg.version = aggPayload.version
-                    agg.time = aggPayload.time
+                    agg.setVersion(aggPayload.version)
+                    agg.setTime(aggPayload.time)
 
                     return agg
                 })
@@ -600,8 +600,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
             for (const item of items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                 const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                agg.version = aggPayload.version
-                agg.time = aggPayload.time
+                agg.setVersion(aggPayload.version)
+                agg.setTime(aggPayload.time)
 
                 aggs.push(agg)
             }
@@ -641,8 +641,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
             for (const item of res.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                 const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                agg.version = aggPayload.version
-                agg.time = aggPayload.time
+                agg.setVersion(aggPayload.version)
+                agg.setTime(aggPayload.time)
 
                 aggs.push(agg)
             }
@@ -684,8 +684,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
             for (const item of res.Items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                 const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                agg.version = aggPayload.version
-                agg.time = aggPayload.time
+                agg.setVersion(aggPayload.version)
+                agg.setTime(aggPayload.time)
 
                 aggs.push(agg)
             }
@@ -720,8 +720,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
             for (const item of items) {
                 const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                 const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                agg.version = aggPayload.version
-                agg.time = aggPayload.time
+                agg.setVersion(aggPayload.version)
+                agg.setTime(aggPayload.time)
 
                 aggs.push(agg)
             }
@@ -759,8 +759,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
                 .map<T>(item => {
                     const aggPayload = DynamoDBx.unmarshall<DbAggregate>(item)
                     const agg = unmarshallAttributes(this.aggregate, aggPayload.state)
-                    agg.version = aggPayload.version
-                    agg.time = aggPayload.time
+                    agg.setVersion(aggPayload.version)
+                    agg.setTime(aggPayload.time)
 
                     return agg
                 })
@@ -796,8 +796,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             const payload = DynamoDBx.unmarshall<DbAggregate>(items[0])
             const agg = unmarshallAttributes(this.aggregate, payload.state)
-            agg.version = payload.version
-            agg.time = payload.time
+            agg.setVersion(payload.version)
+            agg.setTime(payload.time)
 
             return agg
         } catch (e) {
@@ -843,8 +843,8 @@ export abstract class AggregateRepo<T extends Aggregate> {
 
             const payload = DynamoDBx.unmarshall<DbAggregate>(item)
             const agg = unmarshallAttributes(this.aggregate, payload.state)
-            agg.version = payload.version
-            agg.time = payload.time
+            agg.setVersion(payload.version)
+            agg.setTime(payload.time)
 
             return agg
         } catch (e) {

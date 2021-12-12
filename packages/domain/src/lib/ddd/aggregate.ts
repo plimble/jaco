@@ -3,8 +3,8 @@ import {deepClone} from '@onedaycat/jaco-common'
 
 export abstract class Aggregate {
     abstract id: string
-    version = 0
-    time = 0
+    private version = 0
+    private time = 0
     private _events: Array<DomainEvent> = []
 
     hasChanged(): boolean {
@@ -19,6 +19,22 @@ export abstract class Aggregate {
         this._events.push(event)
         this.version = this.version + 1
         this.time = event.time
+    }
+
+    getVersion(): number {
+        return this.version
+    }
+
+    getTime(): number {
+        return this.time
+    }
+
+    setVersion(version: number): void {
+        this.version = version
+    }
+
+    setTime(time: number): void {
+        this.time = time
     }
 
     clearEvents(): void {

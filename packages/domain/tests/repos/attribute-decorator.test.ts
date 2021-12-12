@@ -1,38 +1,48 @@
-import {Aggregate, Entity, Init, marshallAttributes, unmarshallAttributes} from '@onedaycat/jaco-domain'
 import {
     ArrayAttribute,
     Attribute,
+    Init,
     MapAttribute,
+    marshallAttributes,
     ObjectAttribute,
     SetAttribute,
+    unmarshallAttributes,
 } from '../../src/lib/ddd/attribute-decorator'
+import {Aggregate} from '../../src/lib/ddd/aggregate'
+import {Entity} from '../../src/lib/ddd/entity'
+import {Props} from '@onedaycat/jaco-common'
 
 describe('AggregateRepo', () => {
     class En extends Entity {
         @Attribute()
         id = 'e1'
 
-        hidden = 0
+        hidden = '0'
+
+        constructor(props?: Props<En>) {
+            super()
+            if (props) Object.assign(this, props)
+        }
     }
 
     class Agg extends Aggregate {
         @Attribute()
-        id = ''
+        id!: string
 
         @ArrayAttribute(En)
-        listEn: En[] = []
+        listEn!: En[]
 
         @MapAttribute(En)
-        mapEn = new Map<string, En>()
+        mapEn!: Map<string, En>
 
         @SetAttribute()
-        setEn = new Set<string>()
+        setEn!: Set<string>
 
         @ObjectAttribute(En)
         en?: En
 
         @ObjectAttribute(En)
-        enReq: En = new En()
+        enReq!: En
 
         @ObjectAttribute(En, {
             toModel: (val: En) => {
@@ -41,9 +51,14 @@ describe('AggregateRepo', () => {
                 return val
             },
         })
-        toDb: En = new En()
+        toDb!: En
 
-        hidden = 0
+        hidden!: number
+
+        constructor(props: Props<Agg>) {
+            super()
+            Object.assign(this, props)
+        }
 
         @Init()
         init() {
@@ -52,7 +67,15 @@ describe('AggregateRepo', () => {
     }
 
     test('Parse', async () => {
-        const model1 = new Agg()
+        const model1 = new Agg({
+            enReq: new En(),
+            hidden: 0,
+            id: '',
+            listEn: [],
+            mapEn: new Map(),
+            setEn: new Set(),
+            toDb: new En(),
+        })
         model1.id = 'a1'
         model1.listEn.push(new En(), new En())
         model1.mapEn.set('k1', new En())

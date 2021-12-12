@@ -97,11 +97,12 @@ export function unmarshallAttributes<T>(modelClass: Constructor<T>, data: Record
     const metadata = Reflect.getMetadata(ATTRIBUTE_KEY, modelClass) as AttributeMetadata | undefined
     if (!metadata) throw new Error(`no attribute metadata in ${modelClass.name}}`)
 
-    const model = new modelClass() as Record<string, any>
-
+    const props: Record<string, any> = {}
     for (const [key, val] of Object.entries(data)) {
-        model[key] = unmarshall(data, val, metadata.props[key])
+        props[key] = unmarshall(data, val, metadata.props[key])
     }
+
+    const model = new modelClass(props)
 
     if (metadata.init && model[metadata.init] && typeof model[metadata.init] === 'function') {
         model[metadata.init]()
