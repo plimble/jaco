@@ -54,6 +54,15 @@ export function mapToRecord<T extends string | number, K>(map: Map<T, K>): Recor
     return result
 }
 
+export function recordToMap<T extends string, K>(rec: Record<T, K>): Map<T, K> {
+    const result = new Map<T, K>()
+    for (const [key, item] of Object.entries(rec)) {
+        result.set(key as T, item as K)
+    }
+
+    return result
+}
+
 const regEx = /[`~!@#$%^&*()_|+\-=?;:'",.<>{}[\]\\/]/g
 
 export function removeSpecialChar(str: string) {
