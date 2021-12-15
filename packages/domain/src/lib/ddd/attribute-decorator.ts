@@ -17,7 +17,13 @@ export interface AttributeOptions {
 export interface AttributeInfo {
     type: 'map' | 'set' | 'array' | 'object' | 'any'
     ref?: Constructor<any>
+    union?: UnionConstructor
     options?: AttributeOptions
+}
+
+export interface UnionConstructor {
+    field: string
+    types: Record<string, Constructor<any>>
 }
 
 export function Attribute(options?: AttributeOptions): PropertyDecorator {
@@ -40,12 +46,22 @@ export function Init(): PropertyDecorator {
     }
 }
 
-export function MapAttribute(type?: Constructor<any>, options?: AttributeOptions): PropertyDecorator {
+export function MapAttribute(
+    type?: Constructor<any> | UnionConstructor,
+    options?: AttributeOptions,
+): PropertyDecorator {
     return function (target: any, key?: string | symbol) {
         if (!key) return
 
         const metadata: AttributeMetadata = Reflect.getMetadata(ATTRIBUTE_KEY, target.constructor) ?? {props: {}}
-        metadata.props[key] = {type: 'map', ref: type, options}
+        metadata.props[key] = {type: 'map', options}
+        if (type != null) {
+            if (typeof type === 'function') {
+                metadata.props[key].ref = type
+            } else {
+                metadata.props[key].union = type
+            }
+        }
         Reflect.defineMetadata(ATTRIBUTE_KEY, metadata, target.constructor)
     }
 }
@@ -60,22 +76,44 @@ export function SetAttribute(options?: AttributeOptions): PropertyDecorator {
     }
 }
 
-export function ArrayAttribute(item?: Constructor<any>, options?: AttributeOptions): PropertyDecorator {
+export function ArrayAttribute(
+    item?: Constructor<any> | UnionConstructor,
+    options?: AttributeOptions,
+): PropertyDecorator {
     return function (target: any, key?: string | symbol) {
         if (!key) return
 
         const metadata: AttributeMetadata = Reflect.getMetadata(ATTRIBUTE_KEY, target.constructor) ?? {props: {}}
-        metadata.props[key] = {type: 'array', ref: item, options}
+        metadata.props[key] = {type: 'array', options}
+        if (item != null) {
+            if (typeof item === 'function') {
+                metadata.props[key].ref = item
+            } else {
+                metadata.props[key].union = item
+            }
+        }
+
         Reflect.defineMetadata(ATTRIBUTE_KEY, metadata, target.constructor)
     }
 }
 
-export function ObjectAttribute(type: Constructor<any>, options?: AttributeOptions): PropertyDecorator {
+export function ObjectAttribute(
+    type: Constructor<any> | UnionConstructor,
+    options?: AttributeOptions,
+): PropertyDecorator {
     return function (target: any, key?: string | symbol) {
         if (!key) return
 
         const metadata: AttributeMetadata = Reflect.getMetadata(ATTRIBUTE_KEY, target.constructor) ?? {props: {}}
-        metadata.props[key] = {type: 'object', ref: type, options}
+        metadata.props[key] = {type: 'object', options}
+        if (type != null) {
+            if (typeof type === 'function') {
+                metadata.props[key].ref = type
+            } else {
+                metadata.props[key].union = type
+            }
+        }
+
         Reflect.defineMetadata(ATTRIBUTE_KEY, metadata, target.constructor)
     }
 }
@@ -158,12 +196,17 @@ function unmarshall(data: any, value: any, info: AttributeInfo): any {
             if (value == null) return transform(data, value, toModel)
 
             const result = new Map<string, any>()
-            for (const [key, val] of Object.entries(value)) {
+            for (const [key, val] of Object.entries<any>(value)) {
+                if (val == null) {
+                    result.set(key, transform(data, val, toModel))
+                    continue
+                }
+
+                const ref = info.union ? info.union.types[val[info.union.field]] : info.ref ?? undefined
+
                 result.set(
                     key,
-                    info.ref && val != null
-                        ? unmarshallAttributes(info.ref, transform(data, val, toModel))
-                        : transform(data, val, toModel),
+                    ref ? unmarshallAttributes(ref, transform(data, val, toModel)) : transform(data, val, toModel),
                 )
             }
 
@@ -184,19 +227,25 @@ function unmarshall(data: any, value: any, info: AttributeInfo): any {
 
             const result: any[] = []
             for (const val of value as any[]) {
+                if (val == null) {
+                    result.push(transform(data, val, toModel))
+                    continue
+                }
+
+                const ref = info.union ? info.union.types[val[info.union.field]] : info.ref ?? undefined
+
                 result.push(
-                    info.ref && val != null
-                        ? unmarshallAttributes(info.ref, transform(data, val, toModel))
-                        : transform(data, val, toModel),
+                    ref ? unmarshallAttributes(ref, transform(data, val, toModel)) : transform(data, val, toModel),
                 )
             }
 
             return result
         }
         case 'object': {
-            return info.ref && value != null
-                ? unmarshallAttributes(info.ref, transform(data, value, toModel))
-                : transform(data, value, toModel)
+            if (value == null) return transform(data, value, toModel)
+            const ref = info.union ? info.union.types[value[info.union.field]] : info.ref ?? undefined
+
+            return ref ? unmarshallAttributes(ref, transform(data, value, toModel)) : transform(data, value, toModel)
         }
     }
 

@@ -13,6 +13,18 @@ import {Entity} from '../../src/lib/ddd/entity'
 import {Props} from '@onedaycat/jaco-common'
 
 describe('AggregateRepo', () => {
+    type UN = U1 | U2
+
+    class U1 {
+        @Attribute()
+        type = 'u1'
+    }
+
+    class U2 {
+        @Attribute()
+        type = 'u2'
+    }
+
     class En extends Entity {
         @Attribute()
         id = 'e1'
@@ -55,6 +67,9 @@ describe('AggregateRepo', () => {
 
         hidden!: number
 
+        @ObjectAttribute({field: 'type', types: {u1: U1, u2: U2}})
+        un!: UN
+
         constructor(props: Props<Agg>) {
             super()
             Object.assign(this, props)
@@ -75,6 +90,7 @@ describe('AggregateRepo', () => {
             mapEn: new Map(),
             setEn: new Set(),
             toDb: new En(),
+            un: new U2(),
         })
         model1.id = 'a1'
         model1.listEn.push(new En(), new En())
@@ -95,11 +111,13 @@ describe('AggregateRepo', () => {
             setEn: ['s1', 's2'],
             enReq: {id: 'e2'},
             toDb: {id: 'e1'},
+            un: {type: 'u2'},
         })
 
         const model2 = unmarshallAttributes(Agg, data1)
         model1.toDb.id = '10'
         model1.hidden = 1
         expect(model2).toEqual(model1)
+        expect(model2.un).toBeInstanceOf(U2)
     })
 })
