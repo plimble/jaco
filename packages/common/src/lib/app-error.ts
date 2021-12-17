@@ -125,6 +125,7 @@ export const NotImplemented: AppErrorInfo = {status: 503, code: 'NotImplemented'
 export const Unauthorized: AppErrorInfo = {status: 401, code: 'Unauthorized', msg: 'Request is not authorized'}
 export const TimeoutError: AppErrorInfo = {status: 408, code: 'TimeoutError', msg: 'Request timeout'}
 export const InternalError: AppErrorInfo = {status: 500, code: 'InternalError', msg: 'Internal error'}
+export const InvalidRequestError: AppErrorInfo = {status: 400, code: 'InvalidRequestError', msg: 'Invalid request'}
 
 export function isError(e: any, code: string | AppErrorInfo): e is AppError {
     const appCode = typeof code === 'string' ? code : code.code
