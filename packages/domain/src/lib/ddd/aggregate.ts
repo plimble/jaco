@@ -1,11 +1,11 @@
-import {DomainEvent} from './domain-event'
 import {deepClone} from '@onedaycat/jaco-common'
+import {Message} from '@onedaycat/jaco'
 
 export abstract class Aggregate {
     abstract id: string
     private version = 0
     private time = 0
-    private _events: Array<DomainEvent> = []
+    private _events: Array<Message> = []
 
     hasChanged(): boolean {
         return this._events.length > 0
@@ -15,7 +15,7 @@ export abstract class Aggregate {
         return this._events.some(event => event.type === evetType)
     }
 
-    addEvent(event: DomainEvent): void {
+    addEvent(event: Message): void {
         this._events.push(event)
         this.version = this.version + 1
         this.time = event.time
@@ -41,7 +41,7 @@ export abstract class Aggregate {
         this._events.splice(0, this._events.length)
     }
 
-    getEvents(): DomainEvent[] {
+    getEvents(): Message[] {
         return this._events
     }
 

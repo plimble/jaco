@@ -1,5 +1,4 @@
 import DynamoDB, {ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
-
 import {
     AggregateRepoOptions,
     CustomFields,
@@ -23,8 +22,8 @@ import {container} from 'tsyringe'
 import {AppError, Clock, Constructor, InternalError, wrapError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 import {Aggregate} from '../ddd/aggregate'
-import {EventPublisher} from '../event-publisher/event-publisher'
 import {marshallAttributes, unmarshallAttributes} from '../ddd/attribute-decorator'
+import {Publisher} from '@onedaycat/jaco'
 
 export abstract class AggregateRepo<T extends Aggregate> {
     protected aggregate: Constructor<T>
@@ -35,7 +34,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
     protected customerFields?: CustomFields<T>
     protected indexName?: IndexName
     protected defaultTTLInSec: number
-    protected eventPublisher: EventPublisher
+    protected eventPublisher: Publisher
     protected deleteCondition?: string
     private index = new Map<string, string>()
 
@@ -49,7 +48,7 @@ export abstract class AggregateRepo<T extends Aggregate> {
         this.deleteCondition = options.deleteCondition
         this.defaultTTLInSec = options.defaultTTLInSec ?? 0
         this.customerFields = options.customFields
-        this.eventPublisher = container.resolve(EventPublisher)
+        this.eventPublisher = container.resolve(Publisher)
         this.initIndex()
     }
 
