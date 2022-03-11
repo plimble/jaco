@@ -1,5 +1,4 @@
 import {addGlobalEventProcessor, getCurrentHub} from '@sentry/core'
-import {getExceptionFromError} from '@sentry/node/dist/parsers'
 import {
     Event as SentryEvent,
     EventHint as SentryEventHint,
@@ -8,6 +7,7 @@ import {
     Integration,
     StackFrame,
 } from '@sentry/types'
+import {getExceptionFromError} from './parser'
 import {AppError} from '@onedaycat/jaco-common'
 
 const DEFAULT_KEY = 'cause'
