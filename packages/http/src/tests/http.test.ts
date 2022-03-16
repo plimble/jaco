@@ -1,4 +1,4 @@
-import {HttpClient} from '@onedaycat/jaco-http'
+import {HttpClient} from '../lib/http'
 
 describe('Http', () => {
     const client = new HttpClient()
