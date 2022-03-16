@@ -9,6 +9,8 @@
     "deploy": "packages/deploy",
     "domain": "packages/domain",
     "http": "packages/http",
+    "lambda": "packages/lambda",
+    "messaging": "packages/messaging",
     "sagas": "packages/sagas",
     "sentry": "packages/sentry",
     "testing": "packages/testing",

@@ -1,19 +1,10 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "**/*"
-  ],
-  "plugins": [
-    "@nrwl/nx"
-  ],
+  "ignorePatterns": ["**/*"],
+  "plugins": ["@nrwl/nx"],
   "overrides": [
     {
-      "files": [
-        "*.ts",
-        "*.tsx",
-        "*.js",
-        "*.jsx"
-      ],
+      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
       "rules": {
         "@nrwl/nx/enforce-module-boundaries": [
           "error",
@@ -23,9 +14,7 @@
             "depConstraints": [
               {
                 "sourceTag": "*",
-                "onlyDependOnLibsWithTags": [
-                  "*"
-                ]
+                "onlyDependOnLibsWithTags": ["*"]
               }
             ]
           }
@@ -33,13 +22,8 @@
       }
     },
     {
-      "files": [
-        "*.ts",
-        "*.tsx"
-      ],
-      "extends": [
-        "plugin:@nrwl/nx/typescript"
-      ],
+      "files": ["*.ts", "*.tsx"],
+      "extends": ["plugin:@nrwl/nx/typescript"],
       "rules": {
         "semi": "off",
         "quotes": "off",
@@ -61,14 +45,8 @@
             "skipRegExps": true
           }
         ],
-        "@typescript-eslint/semi": [
-          "error",
-          "never"
-        ],
-        "@typescript-eslint/quotes": [
-          "error",
-          "single"
-        ],
+        "@typescript-eslint/semi": ["error", "never"],
+        "@typescript-eslint/quotes": ["error", "single"],
         "@typescript-eslint/no-unused-vars": [
           "error",
           {
@@ -101,13 +79,8 @@
       }
     },
     {
-      "files": [
-        "*.js",
-        "*.jsx"
-      ],
-      "extends": [
-        "plugin:@nrwl/nx/javascript"
-      ],
+      "files": ["*.js", "*.jsx"],
+      "extends": ["plugin:@nrwl/nx/javascript", "./eslint-config-onedaycat.json"],
       "rules": {}
     }
   ]
