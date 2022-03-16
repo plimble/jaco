@@ -1,12 +1,10 @@
-import {chunkArray, removeSpecialChar} from '@onedaycat/jaco-common'
+import {chunkArray, removeSpecialChar} from '../lib/utils'
 
 describe('utils', () => {
     test('ChunkArray success', () => {
         const arr = [1, 2, 3, 4, 5, 6, 7]
 
-        expect(chunkArray<number>(arr, 2)).toEqual([
-            [1, 2], [3, 4], [5, 6], [7],
-        ])
+        expect(chunkArray<number>(arr, 2)).toEqual([[1, 2], [3, 4], [5, 6], [7]])
     })
 
     test('remove special character', () => {

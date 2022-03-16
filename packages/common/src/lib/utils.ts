@@ -2,6 +2,8 @@ import copy from 'fast-copy'
 import {deepEqual as fastDeepEqual} from 'fast-equals'
 import {Constructor} from './types'
 
+export {Type} from 'class-transformer'
+
 export function chunkArray<T>(arr: T[], size: number): T[][] {
     const arrT: T[][] = []
     for (let i = 0; i < arr.length; i += size) {

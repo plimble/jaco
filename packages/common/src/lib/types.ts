@@ -1,1 +1,3 @@
-export type Constructor<T> = new(...args: any[]) => T
+export type Constructor<T> = new (...args: any[]) => T
+export type DeepWriteable<T> = {-readonly [P in keyof T]: DeepWriteable<T[P]>}
+export type Writeable<T> = {-readonly [P in keyof T]: T[P]}

@@ -1,4 +1,4 @@
-import {IdGen} from '@onedaycat/jaco-common'
+import {IdGen} from '../lib/idgen'
 
 describe('IdGen', () => {
     beforeEach(() => {

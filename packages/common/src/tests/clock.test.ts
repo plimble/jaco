@@ -1,4 +1,4 @@
-import {Clock} from '@onedaycat/jaco-common'
+import {Clock} from '../lib/clock'
 
 describe('Clock', () => {
     beforeEach(() => {

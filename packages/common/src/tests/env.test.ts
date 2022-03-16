@@ -1,4 +1,4 @@
-import {loadEnv, overrideEnv} from '../../src/lib/env'
+import {loadEnv, overrideEnv} from '../lib/env'
 
 class TestEnv {
     name = ''
