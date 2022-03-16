@@ -7,9 +7,9 @@ import {
     ObjectAttribute,
     SetAttribute,
     unmarshallAttributes,
-} from '../../src/lib/ddd/attribute-decorator'
-import {Aggregate} from '../../src/lib/ddd/aggregate'
-import {Entity} from '../../src/lib/ddd/entity'
+} from '../../src/lib/model/attribute-decorator'
+import {Aggregate} from '../../src/lib/model/aggregate'
+import {Entity} from '../../src/lib/model/entity'
 import {Props} from '@onedaycat/jaco-common'
 
 describe('AggregateRepo', () => {
