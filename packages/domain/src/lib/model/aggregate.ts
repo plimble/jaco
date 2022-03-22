@@ -1,7 +1,7 @@
 import {deepClone, deepEqual, DeepProps, Props} from '@onedaycat/jaco-common'
-import {Message} from '@onedaycat/jaco-core'
 import produce, {Draft} from 'immer'
 import {instanceToPlain} from 'class-transformer'
+import {Message} from './message'
 
 export abstract class Aggregate {
     abstract readonly id: string

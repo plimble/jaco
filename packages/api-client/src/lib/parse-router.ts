@@ -1,6 +1,6 @@
 import * as glob from 'glob'
 import {Controller, controllerPaths, getMetadataApi} from '@onedaycat/jaco'
-import {AppErrorInfo, Constructor} from '@onedaycat/jaco-common'
+import {AppErrorSchema, Constructor} from '@onedaycat/jaco-common'
 import {getSchema} from '@onedaycat/jaco-validator'
 
 export interface ApiSchema {
@@ -8,7 +8,7 @@ export interface ApiSchema {
     path: string
     ctrl: Constructor<Controller>
     desc?: string
-    errors?: AppErrorInfo[]
+    errors?: AppErrorSchema[]
     inputSchema?: Record<string, any>
     outputSchema?: Record<string, any>
 }

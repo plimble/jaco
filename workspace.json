@@ -8,6 +8,7 @@
     "core": "packages/core",
     "deploy": "packages/deploy",
     "domain": "packages/domain",
+    "dynamodb": "packages/dynamodb",
     "http": "packages/http",
     "lambda": "packages/lambda",
     "messaging": "packages/messaging",

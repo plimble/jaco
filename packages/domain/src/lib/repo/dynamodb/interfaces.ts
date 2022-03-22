@@ -2,12 +2,17 @@ import {ExpressionAttributeNameMap, ExpressionAttributeValueMap, Key} from 'aws-
 import {Constructor} from '@onedaycat/jaco-common'
 import {Aggregate} from '../../model/aggregate'
 import {Entity} from '../../model/entity'
+import {Message} from '../../model/message'
 
 export type DdbModel = Entity | Aggregate
 
 export type IndexData = {
     hashKey: string
     [index: string]: string | undefined
+}
+
+export interface MessagePublisher {
+    publish(messages: Message[]): Promise<void>
 }
 
 export type CustomData = {
@@ -47,6 +52,7 @@ export interface DdbRepoOptions<T extends DdbModel> {
     schema: DdbTableSchema
     prefixRangeKey?: string
     defaultTTLInSec?: number
+    publisher?: MessagePublisher
 }
 
 export interface DbAggregate {

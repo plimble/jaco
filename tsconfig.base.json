@@ -29,6 +29,7 @@
       "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
       "@onedaycat/jaco-deploy": ["packages/deploy/src/index.ts"],
       "@onedaycat/jaco-domain": ["packages/domain/src/index.ts"],
+      "@onedaycat/jaco-dynamodb": ["packages/dynamodb/src/index.ts"],
       "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
       "@onedaycat/jaco-lambda": ["packages/lambda/src/index.ts"],
       "@onedaycat/jaco-messaging": ["packages/messaging/src/index.ts"],

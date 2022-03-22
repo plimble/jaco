@@ -14,7 +14,7 @@ export interface AppErrorPayload {
  */
 export type AppErrorSchema = () => any[]
 
-const ExceptionsStatusName: Record<number, string> = {
+export const ExceptionsStatusName: Record<number, string> = {
     404: 'NotFound',
     400: 'BadRequest',
     408: 'Timeout',

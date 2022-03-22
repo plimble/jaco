@@ -1,6 +1,5 @@
 import {AppError, Constructor, wrapError} from '@onedaycat/jaco-common'
-import {Handler} from '../handler'
-import {Context} from '../context'
+import {Context, Handler} from '@onedaycat/jaco-core'
 
 export interface ReactorSetup {
     reactor: Constructor<Reactor>

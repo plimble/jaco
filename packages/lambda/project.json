@@ -1,0 +1,48 @@
+{
+  "root": "packages/lambda",
+  "sourceRoot": "packages/lambda/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/lambda/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/lambda"],
+      "options": {
+        "jestConfig": "packages/lambda/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/lambda",
+        "tsConfig": "packages/lambda/tsconfig.lib.json",
+        "packageJson": "packages/lambda/package.json",
+        "main": "packages/lambda/src/index.ts",
+        "assets": ["packages/lambda/*.md"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true,
+        "syncVersions": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
+      }
+    }
+  },
+  "tags": []
+}

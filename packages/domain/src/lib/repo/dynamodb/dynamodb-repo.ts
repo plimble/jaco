@@ -10,6 +10,7 @@ import {
     DeleteOptions,
     GetOptions,
     IndexData,
+    MessagePublisher,
     MultiGetOptions,
     PageOutput,
     QueryOptions,
@@ -22,7 +23,6 @@ import {container} from 'tsyringe'
 import {AppError, Clock, Constructor, InternalError, wrapError} from '@onedaycat/jaco-common'
 import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
 import {Aggregate} from '../../model/aggregate'
-import {Publisher} from '@onedaycat/jaco'
 import {createKeyCondition} from './create-key-condition'
 
 export abstract class DynamodbRepo<T extends DdbModel> {
@@ -30,11 +30,11 @@ export abstract class DynamodbRepo<T extends DdbModel> {
     protected prefixRangeKey?: string
     protected db: DynamoDBx
     protected defaultTTLInSec: number
-    protected eventPublisher: Publisher
+    protected eventPublisher?: MessagePublisher
     protected schema: DdbTableSchema
 
     protected constructor(options: DdbRepoOptions<T>) {
-        this.eventPublisher = container.resolve(Publisher)
+        this.eventPublisher = options.publisher
         this.db = container.resolve(DynamoDBx)
         this.model = options.model
         this.prefixRangeKey = options.prefixRangeKey
@@ -163,7 +163,7 @@ export abstract class DynamodbRepo<T extends DdbModel> {
         }
 
         try {
-            if (committedEvents && committedEvents.length) {
+            if (committedEvents && committedEvents.length && this.eventPublisher) {
                 await this.eventPublisher.publish(committedEvents)
             }
         } catch (e) {
@@ -240,7 +240,7 @@ export abstract class DynamodbRepo<T extends DdbModel> {
         if (options?.aggregateOnly) return
 
         try {
-            if (committedEvents && committedEvents.length) {
+            if (committedEvents && committedEvents.length && this.eventPublisher) {
                 await this.eventPublisher.publish(committedEvents)
             }
         } catch (e) {

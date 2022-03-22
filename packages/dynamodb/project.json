@@ -1,0 +1,47 @@
+{
+  "root": "packages/dynamodb",
+  "sourceRoot": "packages/dynamodb/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/dynamodb/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/dynamodb"],
+      "options": {
+        "jestConfig": "packages/dynamodb/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/dynamodb",
+        "tsConfig": "packages/dynamodb/tsconfig.lib.json",
+        "packageJson": "packages/dynamodb/package.json",
+        "main": "packages/dynamodb/src/index.ts",
+        "assets": ["packages/dynamodb/*.md"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version",
+      "options": {
+        "skipRootChangelog": true,
+        "skipProjectChangelog": true
+      }
+    },
+    "deploy": {
+      "executor": "ngx-deploy-npm:deploy",
+      "options": {
+        "access": "restricted"
+      }
+    }
+  },
+  "tags": []
+}

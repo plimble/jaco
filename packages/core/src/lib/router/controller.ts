@@ -1,5 +1,5 @@
-import {AppErrorInfo, Constructor} from '@onedaycat/jaco-common'
-import {Context} from '../../context'
+import {AppErrorSchema, Constructor} from '@onedaycat/jaco-common'
+import {Context} from '../context'
 import {Guard} from './guard'
 import {CTRL_KEY} from './metadata-storage'
 
@@ -9,7 +9,7 @@ export interface ApiInfo {
     security?: any
     guards?: Constructor<Guard>[]
     description?: string
-    errors?: AppErrorInfo[]
+    errors?: AppErrorSchema[]
 }
 
 export function Api(info: ApiInfo): (target: any) => any {
