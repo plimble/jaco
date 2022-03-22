@@ -6,20 +6,21 @@ import {Guard} from './guard'
 import {validate} from '@onedaycat/jaco-validator'
 import {ApiInfo} from './controller'
 import {getMetadataApi} from './metadata-storage'
-import {HttpReq} from '../req'
-import {HttpRes} from '../res'
+import {HttpReq, HttpRes} from '../req'
 
 export class RouterHandler implements Handler {
     constructor(private router: ApiRouter) {}
 
-    async handle(req: HttpReq, context: Context): Promise<HttpRes> {
+    async handle(payload: any, context: Context): Promise<HttpRes> {
+        const req = context.getRequest() as HttpReq
+
         const result = this.router.getRoute(req.method, req.path)
         if (!result) {
             throw new AppError(MethodNotFound)
         }
 
         for (const [param, val] of Object.entries(result.params)) {
-            req.payload[param] = val
+            payload[param] = val
         }
 
         const ctrlClass = await result.handler()
@@ -38,12 +39,12 @@ export class RouterHandler implements Handler {
         }
 
         if (apiInfo.input) {
-            const errMsg = validate(apiInfo.input, req.payload)
+            const errMsg = validate(apiInfo.input, payload)
             if (errMsg) {
                 throw new AppError(ValidateError).withMessage(errMsg)
             }
 
-            return await ctrl.handle(req.payload, context)
+            return await ctrl.handle(payload, context)
         }
 
         return await ctrl.handle(undefined, context)

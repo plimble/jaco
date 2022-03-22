@@ -1,21 +1,17 @@
 import 'reflect-metadata'
 import {AppError, Constructor, container, isAppError, TimeoutError, wrapError} from '@onedaycat/jaco-common'
 import {Handler} from './handler'
-import {EventParser} from './event-parser'
 import {Middleware, Next} from './middleware'
 import {ErrorHandler} from './error-handler'
-import {RawEventParser} from './event-parsers/raw-event-parser'
 import {Req} from './req'
 import {Context, REQUEST_CONTEXT} from './context'
 
 export interface AppOptions {
     handler: Handler | Constructor<Handler>
-    eventParser?: Constructor<EventParser>
 }
 
 export class App {
     readonly handler: Handler
-    private readonly eventParser: EventParser
     private readonly middlewares: Array<Constructor<Middleware>> = []
     private cacheMiddlewares?: Middleware[]
     private cacheErrors?: ErrorHandler[]
@@ -27,15 +23,9 @@ export class App {
         } else {
             this.handler = container.resolve(options.handler as Constructor<Handler>)
         }
-
-        if (options.eventParser) {
-            this.eventParser = container.resolve(options.eventParser)
-        } else {
-            this.eventParser = new RawEventParser()
-        }
     }
 
-    async invoke<T>(req: Req<T>, context?: Context): Promise<T | AppError> {
+    async invoke<T extends Req = Req>(req: T, context?: Context): Promise<T | AppError> {
         if (!context) context = new Context()
         context.setData<Req>(REQUEST_CONTEXT, req)
 
@@ -51,7 +41,7 @@ export class App {
         }
     }
 
-    async invokeWithTimeout<T>(req: Req<T>, context: Context): Promise<T | AppError> {
+    async invokeWithTimeout<T extends Req = Req>(req: T, context: Context): Promise<T | AppError> {
         if (!req.timeout) {
             return this.invoke(req, context)
         }
@@ -62,9 +52,7 @@ export class App {
 
         const result = await Promise.race<any>([this.invoke(req, context), timeout])
         if (isAppError(result, TimeoutError)) {
-            const err = await this.handleErrors(result, context)
-
-            return this.eventParser.parseErrorResponse(err, context)
+            return this.handleErrors(result, context)
         }
 
         return result
@@ -109,29 +97,10 @@ export class App {
     }
 
     private async handle(req: Req, context: Context): Promise<any> {
-        if (req.raw) {
-            try {
-                req.payload = await this.eventParser.parseRequest(req.raw, context)
-            } catch (e) {
-                const err = await this.handleErrors(wrapError(e), context)
-
-                return this.eventParser.onParseRequestError(err, context)
-            }
-        }
-
         try {
-            const result = await this.handler.handle(req.payload, context)
-            if (result instanceof AppError) {
-                const err = await this.handleErrors(result, context)
-
-                return this.eventParser.parseErrorResponse(err, context)
-            } else {
-                return this.eventParser.parseResponse(result, context)
-            }
+            return this.handler.handle(req.payload, context)
         } catch (e) {
-            const err = await this.handleErrors(wrapError(e), context)
-
-            return this.eventParser.parseErrorResponse(err, context)
+            return this.handleErrors(wrapError(e), context)
         }
     }
 

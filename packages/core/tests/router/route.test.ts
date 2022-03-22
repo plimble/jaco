@@ -1,13 +1,12 @@
-import {MethodNotFound, Singleton} from '@onedaycat/jaco-common'
-import {Api, ApiPayload, ApiResponse, ApiRouter, Context, Controller, createApiApp} from '../../src/index'
-import {Schema, Validate} from '@onedaycat/jaco-validator'
+import {AppError, MethodNotFound, Singleton} from '@onedaycat/jaco-common'
+import {Api, ApiRouter, App, Context, Controller, HttpReq, HttpRes, RouterHandler} from '../../src/index'
+import {Field} from '@onedaycat/jaco-validator'
 
-@Validate()
 class Input {
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     id = ''
 
-    @Schema({type: 'string'})
+    @Field({type: 'string'})
     name = ''
 }
 
@@ -17,8 +16,8 @@ class Input {
     description: 'Test',
 })
 @Singleton()
-class Ctrl extends Controller {
-    async handle(input: Input, context: Context): Promise<ApiResponse> {
+class Ctrl implements Controller {
+    async handle(input: Input, context: Context): Promise<HttpRes> {
         return {body: input}
     }
 }
@@ -33,73 +32,52 @@ describe('Route', () => {
 
     router.get(':id', () => Promise.resolve(Ctrl))
 
-    const app = createApiApp(router)
+    const app = new App({
+        handler: new RouterHandler(router),
+    })
 
     test('should be able to get route #1', async () => {
-        const result = await app.invoke<ApiPayload>({
-            payload: {
-                method: 'GET',
-                path: '/user/1',
-                body: {name: 'hello'},
-            },
+        const result = await app.invoke<HttpReq>({
+            method: 'GET',
+            path: '/user/1',
+            payload: {name: 'hello'},
         })
-        expect(result).toEqual({
-            body: JSON.stringify({id: '1', name: 'hello'}),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            statusCode: 200,
+
+        expect(result).toEqual<HttpRes>({
+            body: {id: '1', name: 'hello'},
         })
     })
 
     test('should be able to get route #2', async () => {
-        const result = await app.invoke<ApiPayload>({
-            payload: {
-                method: 'GET',
-                path: '/1',
-                body: {name: 'hello'},
-            },
+        const result = await app.invoke<HttpReq>({
+            method: 'GET',
+            path: '/1',
+            payload: {name: 'hello'},
         })
+
         expect(result).toEqual({
-            body: JSON.stringify({id: '1', name: 'hello'}),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            statusCode: 200,
+            body: {id: '1', name: 'hello'},
         })
     })
 
     test('should be able to get route #3', async () => {
-        const result = await app.invoke<ApiPayload>({
-            payload: {
-                method: 'GET',
-                path: '/user/1/name',
-                body: {name: 'hello'},
-            },
+        const result = await app.invoke<HttpReq>({
+            method: 'GET',
+            path: '/user/1/name',
+            payload: {name: 'hello'},
         })
         expect(result).toEqual({
-            body: JSON.stringify({id: '1', name: 'hello'}),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            statusCode: 200,
+            body: {id: '1', name: 'hello'},
         })
     })
 
     test('should be not found route', async () => {
-        const result = await app.invoke<ApiPayload>({
-            payload: {
-                method: 'GET',
-                path: '/user/1/name/2',
-                body: {name: 'hello'},
-            },
+        const result = await app.invoke<HttpReq>({
+            method: 'GET',
+            path: '/user/1/name/2',
+            payload: {name: 'hello'},
         })
-        expect(result).toEqual({
-            body: JSON.stringify(new MethodNotFound().toErrorPayload()),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            statusCode: 404,
-        })
+
+        expect(result).toEqual(new AppError(MethodNotFound))
     })
 })
