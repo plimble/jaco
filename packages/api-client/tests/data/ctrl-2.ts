@@ -1,4 +1,4 @@
-import {Api, ApiResponse, Context, Controller} from '@onedaycat/jaco'
+import {Api, Context, Controller, HttpRes} from '@onedaycat/jaco-core'
 import {Profile} from './model/profile'
 import {Maintenance} from '@onedaycat/jaco-common'
 
@@ -8,7 +8,7 @@ import {Maintenance} from '@onedaycat/jaco-common'
     errors: [Maintenance],
 })
 export class Ctrl2 implements Controller {
-    async handle(body: undefined, context: Context): Promise<ApiResponse> {
+    async handle(body: undefined, context: Context): Promise<HttpRes> {
         return {
             body: undefined,
         }

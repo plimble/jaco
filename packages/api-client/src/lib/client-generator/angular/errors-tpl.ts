@@ -7,7 +7,8 @@ function genErrors(apiSchemas: ApiSchema[]): string {
     apiSchemas.forEach(apiSchema => {
         if (apiSchema.errors && apiSchema.errors.length) {
             apiSchema.errors.forEach(err => {
-                tpl.push(`    ${constantCase(err.code)}: '${err.code}',`)
+                const errCode = err()[1]
+                tpl.push(`    ${constantCase(errCode)}: '${errCode}',`)
             })
         }
     })

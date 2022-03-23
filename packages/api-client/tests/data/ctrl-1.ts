@@ -1,4 +1,4 @@
-import {Api, ApiResponse, Context, Controller} from '@onedaycat/jaco'
+import {Api, Context, Controller, HttpRes} from '@onedaycat/jaco-core'
 import {Account} from './model/account'
 import {InternalError, Unauthorized} from '@onedaycat/jaco-common'
 
@@ -8,7 +8,7 @@ import {InternalError, Unauthorized} from '@onedaycat/jaco-common'
     errors: [InternalError, Unauthorized],
 })
 export class Ctrl1 implements Controller {
-    async handle(body: undefined, context: Context): Promise<ApiResponse> {
+    async handle(body: undefined, context: Context): Promise<HttpRes> {
         return {
             body: undefined,
         }
