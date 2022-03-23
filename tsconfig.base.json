@@ -32,8 +32,6 @@
       "@onedaycat/jaco-dynamodb": ["packages/dynamodb/src/index.ts"],
       "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
       "@onedaycat/jaco-lambda": ["packages/lambda/src/index.ts"],
-      "@onedaycat/jaco-messaging": ["packages/messaging/src/index.ts"],
-      "@onedaycat/jaco-sagas": ["packages/sagas/src/index.ts"],
       "@onedaycat/jaco-sentry": ["packages/sentry/src/index.ts"],
       "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"],
       "@onedaycat/jaco-validator": ["packages/validator/src/index.ts"]

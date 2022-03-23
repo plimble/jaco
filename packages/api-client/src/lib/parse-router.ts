@@ -1,5 +1,5 @@
 import * as glob from 'glob'
-import {Controller, controllerPaths, getMetadataApi} from '@onedaycat/jaco'
+import {Controller, controllerPaths, getMetadataApi} from '@onedaycat/jaco-core'
 import {AppErrorSchema, Constructor} from '@onedaycat/jaco-common'
 import {getSchema} from '@onedaycat/jaco-validator'
 

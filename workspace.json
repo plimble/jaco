@@ -11,8 +11,6 @@
     "dynamodb": "packages/dynamodb",
     "http": "packages/http",
     "lambda": "packages/lambda",
-    "messaging": "packages/messaging",
-    "sagas": "packages/sagas",
     "sentry": "packages/sentry",
     "testing": "packages/testing",
     "validator": "packages/validator"
