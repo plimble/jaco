@@ -1,5 +1,5 @@
 import SNS from 'aws-sdk/clients/sns'
-import {AppError, InternalError, Singleton, sleep} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton, sleep} from '@plimble/jaco-common'
 
 @Singleton()
 export class SNSX {

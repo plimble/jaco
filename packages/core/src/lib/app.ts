@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {AppError, Constructor, container, isAppError, TimeoutError, wrapError} from '@onedaycat/jaco-common'
+import {AppError, Constructor, container, isAppError, TimeoutError, wrapError} from '@plimble/jaco-common'
 import {Handler} from './handler'
 import {Middleware, Next} from './middleware'
 import {ErrorHandler} from './error-handler'

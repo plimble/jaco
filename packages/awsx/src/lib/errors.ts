@@ -1,4 +1,4 @@
-import {AppError} from '@onedaycat/jaco-common'
+import {AppError} from '@plimble/jaco-common'
 
 export class TransactionCanceled extends AppError {
     constructor(message?: string) {

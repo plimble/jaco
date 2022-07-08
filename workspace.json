@@ -14,5 +14,6 @@
     "sentry": "packages/sentry",
     "testing": "packages/testing",
     "validator": "packages/validator"
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/workspace-schema.json"
 }

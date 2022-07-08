@@ -1,5 +1,5 @@
 import Lambda from 'aws-sdk/clients/lambda'
-import {AppError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, Singleton} from '@plimble/jaco-common'
 
 @Singleton()
 export class Lambdax {

@@ -10,11 +10,23 @@ import DynamoDB, {
 } from 'aws-sdk/clients/dynamodb'
 import {JSONObject} from './json-object'
 import {DynamoDBCursor} from './ddbx.cursor'
-import {AppError, chunkArray, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, chunkArray, InternalError, Singleton} from '@plimble/jaco-common'
 import {TransactionCanceled} from './errors'
 
 @Singleton()
 export class DynamoDBx {
+    protected client: DynamoDB
+
+    constructor(client?: DynamoDB) {
+        if (client) {
+            this.client = client
+        } else {
+            this.client = new DynamoDB({
+                maxRetries: 20,
+            })
+        }
+    }
+
     static unmarshall<T>(data: DynamoDB.AttributeMap, options?: DynamoDB.Converter.ConverterOptions): T {
         return DynamoDB.Converter.unmarshall(data, options) as T
     }
@@ -45,18 +57,6 @@ export class DynamoDBx {
         return DynamoDB.Converter.marshall(JSONObject(data), {
             convertEmptyValues: false,
         })
-    }
-
-    protected client: DynamoDB
-
-    constructor(client?: DynamoDB) {
-        if (client) {
-            this.client = client
-        } else {
-            this.client = new DynamoDB({
-                maxRetries: 20,
-            })
-        }
     }
 
     async putItem(params: DynamoDB.Types.PutItemInput): Promise<DynamoDB.Types.PutItemOutput> {

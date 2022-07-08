@@ -1,4 +1,4 @@
-import {deepClone, deepEqual, DeepProps, DeepWriteable} from '@onedaycat/jaco-common'
+import {deepClone, deepEqual, DeepProps, DeepWriteable} from '@plimble/jaco-common'
 import produce, {Draft} from 'immer'
 import {instanceToPlain} from 'class-transformer'
 

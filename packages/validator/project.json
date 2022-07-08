@@ -1,5 +1,5 @@
 {
-  "root": "packages/validator",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/validator/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/validator"],
       "options": {
-        "jestConfig": "packages/validator/jest.config.js",
+        "jestConfig": "packages/validator/jest.config.ts",
         "passWithNoTests": true
       }
     },

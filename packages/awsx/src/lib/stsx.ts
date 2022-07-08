@@ -1,5 +1,5 @@
 import STS from 'aws-sdk/clients/sts'
-import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@plimble/jaco-common'
 
 @Singleton()
 export class STSX {

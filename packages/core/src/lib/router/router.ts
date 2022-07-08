@@ -1,4 +1,4 @@
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from '@plimble/jaco-common'
 import Route from 'url-router'
 import {Controller} from './controller'
 

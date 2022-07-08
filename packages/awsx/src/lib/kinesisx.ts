@@ -1,5 +1,5 @@
 import Kinesis from 'aws-sdk/clients/kinesis'
-import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@plimble/jaco-common'
 
 @Singleton()
 export class Kinesisx {

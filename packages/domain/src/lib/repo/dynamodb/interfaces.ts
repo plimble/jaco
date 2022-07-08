@@ -1,5 +1,5 @@
 import {ExpressionAttributeNameMap, ExpressionAttributeValueMap, Key} from 'aws-sdk/clients/dynamodb'
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from '@plimble/jaco-common'
 import {Aggregate} from '../../model/aggregate'
 import {Entity} from '../../model/entity'
 import {Message} from '../../model/message'

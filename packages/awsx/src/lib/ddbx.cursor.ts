@@ -1,5 +1,5 @@
 import DynamoDB from 'aws-sdk/clients/dynamodb'
-import {AppError, ValidateError} from '@onedaycat/jaco-common'
+import {AppError, ValidateError} from '@plimble/jaco-common'
 
 export class DynamoDBCursor {
     static create(

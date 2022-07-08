@@ -1,11 +1,10 @@
 {
-  "extends": "@nrwl/workspace/presets/npm.json",
-  "npmScope": "onedaycat",
+  "extends": "nx/presets/npm.json",
+  "npmScope": "plimble",
   "affected": {
     "defaultBase": "main"
   },
   "cli": {
-    "defaultCollection": "@nrwl/node",
     "packageManager": "yarn"
   },
   "implicitDependencies": {
@@ -24,5 +23,6 @@
         "parallel": 1
       }
     }
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }

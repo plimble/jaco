@@ -1,5 +1,5 @@
 import SQS from 'aws-sdk/clients/sqs'
-import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@plimble/jaco-common'
 
 @Singleton()
 export class SQSX {

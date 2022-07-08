@@ -1,6 +1,6 @@
-import {AppError, MethodNotFound, Singleton} from '@onedaycat/jaco-common'
+import {AppError, MethodNotFound, Singleton} from '@plimble/jaco-common'
 import {Api, ApiRouter, App, Context, Controller, HttpReq, HttpRes, RouterHandler} from '../../src/index'
-import {Field} from '@onedaycat/jaco-validator'
+import {Field} from '@plimble/jaco-validator'
 
 class Input {
     @Field({type: 'string'})

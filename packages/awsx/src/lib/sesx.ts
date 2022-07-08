@@ -1,5 +1,5 @@
 import SES, {BulkEmailDestination} from 'aws-sdk/clients/ses'
-import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@plimble/jaco-common'
 
 export interface Recipient {
     email: string

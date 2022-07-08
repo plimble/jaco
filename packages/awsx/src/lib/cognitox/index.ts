@@ -1,5 +1,5 @@
 import CognitoIdentityServiceProvider from 'aws-sdk/clients/cognitoidentityserviceprovider'
-import {AppError, InternalError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, InternalError, Singleton} from '@plimble/jaco-common'
 import {AliasExists, UserNotFound} from './errors'
 
 @Singleton()

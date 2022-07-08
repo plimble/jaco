@@ -1,5 +1,5 @@
 {
-  "root": "packages/lambda",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/lambda/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/lambda"],
       "options": {
-        "jestConfig": "packages/lambda/jest.config.js",
+        "jestConfig": "packages/lambda/jest.config.ts",
         "passWithNoTests": true
       }
     },

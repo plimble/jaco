@@ -1,5 +1,5 @@
 import S3 from 'aws-sdk/clients/s3'
-import {AppError, chunkArray, InternalError, Singleton, wrapError} from '@onedaycat/jaco-common'
+import {AppError, chunkArray, InternalError, Singleton, wrapError} from '@plimble/jaco-common'
 
 @Singleton()
 export class S3X {

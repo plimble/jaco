@@ -1,5 +1,5 @@
 {
-  "root": "packages/sentry",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/sentry/src",
   "projectType": "library",
   "targets": {
@@ -14,7 +14,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/sentry"],
       "options": {
-        "jestConfig": "packages/sentry/jest.config.js",
+        "jestConfig": "packages/sentry/jest.config.ts",
         "passWithNoTests": true
       }
     },

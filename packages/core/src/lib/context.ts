@@ -1,4 +1,4 @@
-import {container} from '@onedaycat/jaco-common'
+import {container} from '@plimble/jaco-common'
 import {DependencyContainer} from 'tsyringe'
 import {HttpReq, Req} from './req'
 

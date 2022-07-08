@@ -22,19 +22,19 @@
     "baseUrl": ".",
     "types": ["node"],
     "paths": {
-      "@onedaycat/jaco-core": ["packages/core/src/index.ts"],
-      "@onedaycat/jaco-api-client": ["packages/api-client/src/index.ts"],
-      "@onedaycat/jaco-awsx": ["packages/awsx/src/index.ts"],
-      "@onedaycat/jaco-cli": ["packages/cli/src/index.ts"],
-      "@onedaycat/jaco-common": ["packages/common/src/index.ts"],
-      "@onedaycat/jaco-deploy": ["packages/deploy/src/index.ts"],
-      "@onedaycat/jaco-domain": ["packages/domain/src/index.ts"],
-      "@onedaycat/jaco-dynamodb": ["packages/dynamodb/src/index.ts"],
-      "@onedaycat/jaco-http": ["packages/http/src/index.ts"],
-      "@onedaycat/jaco-lambda": ["packages/lambda/src/index.ts"],
-      "@onedaycat/jaco-sentry": ["packages/sentry/src/index.ts"],
-      "@onedaycat/jaco-testing": ["packages/testing/src/index.ts"],
-      "@onedaycat/jaco-validator": ["packages/validator/src/index.ts"]
+      "@plimble/jaco-api-client": ["packages/api-client/src/index.ts"],
+      "@plimble/jaco-awsx": ["packages/awsx/src/index.ts"],
+      "@plimble/jaco-cli": ["packages/cli/src/index.ts"],
+      "@plimble/jaco-common": ["packages/common/src/index.ts"],
+      "@plimble/jaco-core": ["packages/core/src/index.ts"],
+      "@plimble/jaco-deploy": ["packages/deploy/src/index.ts"],
+      "@plimble/jaco-domain": ["packages/domain/src/index.ts"],
+      "@plimble/jaco-dynamodb": ["packages/dynamodb/src/index.ts"],
+      "@plimble/jaco-http": ["packages/http/src/index.ts"],
+      "@plimble/jaco-lambda": ["packages/lambda/src/index.ts"],
+      "@plimble/jaco-sentry": ["packages/sentry/src/index.ts"],
+      "@plimble/jaco-testing": ["packages/testing/src/index.ts"],
+      "@plimble/jaco-validator": ["packages/validator/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
