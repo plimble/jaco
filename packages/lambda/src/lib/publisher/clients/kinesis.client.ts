@@ -1,7 +1,7 @@
 import {ClientPublisher} from '../interfaces'
 import Kinesis from 'aws-sdk/clients/kinesis'
-import {chunkArray, Singleton} from '@onedaycat/jaco-common'
-import {Kinesisx} from '@onedaycat/jaco-awsx'
+import {chunkArray, Singleton} from '@plimble/jaco-common'
+import {Kinesisx} from '@plimble/jaco-awsx'
 import {Message} from '../message'
 
 @Singleton()

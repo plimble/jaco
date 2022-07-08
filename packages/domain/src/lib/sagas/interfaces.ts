@@ -1,5 +1,5 @@
 import {Action, Status} from './constants'
-import {AppError, AppErrorPayload} from '@onedaycat/jaco-common'
+import {AppError, AppErrorPayload} from '@plimble/jaco-common'
 
 export interface Step {
     run(state: StepAction): Promise<void>

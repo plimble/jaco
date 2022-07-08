@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {Clock, IdGen} from '@onedaycat/jaco-common'
+import {Clock, IdGen} from '@plimble/jaco-common'
 
 export abstract class Message<T extends Record<string, any> = Record<string, any>> {
     id: string

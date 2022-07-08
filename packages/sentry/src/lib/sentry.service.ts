@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node'
 import {LinkedErrors, LinkErrorOptions} from './linkerror'
-import {AppError, Singleton} from '@onedaycat/jaco-common'
+import {AppError, Singleton} from '@plimble/jaco-common'
 
 export type SentryEnv = 'production' | 'development'
 

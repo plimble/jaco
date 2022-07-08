@@ -1,7 +1,7 @@
 import {CompensateAction, StateResult, Step, StepAction} from './interfaces'
 import {Action, Status} from './constants'
 import DependencyContainer from 'tsyringe/dist/typings/types/dependency-container'
-import {AppError, Clock, Constructor} from '@onedaycat/jaco-common'
+import {AppError, Clock, Constructor} from '@plimble/jaco-common'
 
 export class State<I, S> implements StepAction<I, S>, CompensateAction<I, S> {
     result: StateResult<I, S>

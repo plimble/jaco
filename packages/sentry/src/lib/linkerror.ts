@@ -8,7 +8,7 @@ import {
     StackFrame,
 } from '@sentry/types'
 import {getExceptionFromError} from './parser'
-import {AppError} from '@onedaycat/jaco-common'
+import {AppError} from '@plimble/jaco-common'
 
 const DEFAULT_KEY = 'cause'
 const DEFAULT_LIMIT = 5

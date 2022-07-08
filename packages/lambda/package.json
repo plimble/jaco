@@ -1,5 +1,5 @@
 {
-  "name": "@onedaycat/jaco-lambda",
+  "name": "@plimble/jaco-lambda",
   "version": "0.0.60",
-  "repository": "git@github.com:onedaycat/jaco.git"
+  "repository": "git@github.com:plimble/jaco.git"
 }

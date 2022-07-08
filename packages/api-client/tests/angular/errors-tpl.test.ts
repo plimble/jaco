@@ -1,4 +1,4 @@
-import {parseRouter} from '@onedaycat/jaco-api-client'
+import {parseRouter} from '@plimble/jaco-api-client'
 import path from 'path'
 import {errorsTpl} from '../../src/lib/client-generator/angular/errors-tpl'
 

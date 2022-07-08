@@ -1,4 +1,4 @@
-import {deepClone, deepEqual, DeepProps} from '@onedaycat/jaco-common'
+import {deepClone, deepEqual, DeepProps} from '@plimble/jaco-common'
 import {instanceToPlain} from 'class-transformer'
 
 export abstract class Dto {

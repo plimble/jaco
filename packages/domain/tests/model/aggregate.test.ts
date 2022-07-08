@@ -1,5 +1,5 @@
 import {Aggregate} from '../../src/lib/model/aggregate'
-import {Props} from '@onedaycat/jaco-common'
+import {Props} from '@plimble/jaco-common'
 
 describe('Aggregate', () => {
     describe('patch', () => {

@@ -1,5 +1,5 @@
 import {LambdaOptions} from './lambda-options'
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from '@plimble/jaco-common'
 
 export type ReactorResourceFn = (env: string) => ReactorResourceOptions
 

@@ -1,5 +1,5 @@
 import {ValueObject} from '../../src/lib/model/value-object'
-import {DeepProps, Props} from '@onedaycat/jaco-common'
+import {DeepProps, Props} from '@plimble/jaco-common'
 
 describe('ValueObject', () => {
     describe('patch', () => {

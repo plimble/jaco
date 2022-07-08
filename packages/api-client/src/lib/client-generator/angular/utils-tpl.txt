@@ -1,4 +1,4 @@
-import { AppError } from '@onedaycat/errors';
+import { AppError } from '@plimble/errors';
 import { HttpErrorResponse } from './api.service';
 import { ApiConfig } from './api-config';
 import { HttpErrorResponse as NgHttpErrorResponse, HttpHeaders } from '@angular/common/http';

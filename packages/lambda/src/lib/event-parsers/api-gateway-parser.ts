@@ -1,9 +1,13 @@
-import {AppError, ExceptionsStatusName} from '@onedaycat/jaco-common'
+import {AppError, ExceptionsStatusName} from '@plimble/jaco-common'
 import {APIGatewayProxyEventV2WithJWTAuthorizer, APIGatewayProxyResult} from 'aws-lambda/trigger/api-gateway-proxy'
-import {Authorizer, HttpHeaders, HttpReq, HttpRes} from '@onedaycat/jaco-core'
+import {Authorizer, HttpHeaders, HttpReq, HttpRes} from '@plimble/jaco-core'
 import {EventParser} from './resolve-event-parser'
 
 export class ApiGatewayParser {
+    static defaultHeaders: Record<string, string> = {
+        'Content-Type': 'application/json',
+    }
+
     static apiGatewayParserResError = (err: AppError): string => {
         const payload = {
             code: err.code,
@@ -79,10 +83,6 @@ export class ApiGatewayParser {
         }
 
         return undefined
-    }
-
-    static defaultHeaders: Record<string, string> = {
-        'Content-Type': 'application/json',
     }
 
     private static getAuthroizer(event: APIGatewayProxyEventV2WithJWTAuthorizer): Authorizer | undefined {

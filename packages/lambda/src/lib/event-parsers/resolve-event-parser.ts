@@ -3,7 +3,7 @@ import {RawParser} from './raw-parser'
 import {KinesisParser} from './kinesis-parser'
 import {SQSParser} from './sqs-parser'
 import {ApiGatewayParser} from './api-gateway-parser'
-import {AppError} from '@onedaycat/jaco-common'
+import {AppError} from '@plimble/jaco-common'
 
 export interface EventParser {
     onParseRequestError(err: AppError): any

@@ -1,5 +1,5 @@
-import {AppError, Constructor, wrapError} from '@onedaycat/jaco-common'
-import {Context, Handler} from '@onedaycat/jaco-core'
+import {AppError, Constructor, wrapError} from '@plimble/jaco-common'
+import {Context, Handler} from '@plimble/jaco-core'
 
 export interface ReactorSetup {
     reactor: Constructor<Reactor>

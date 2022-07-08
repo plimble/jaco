@@ -20,8 +20,8 @@ import {
     ScanOutput,
 } from './interfaces'
 import {container} from 'tsyringe'
-import {AppError, Clock, Constructor, InternalError, wrapError} from '@onedaycat/jaco-common'
-import {DynamoDBx, ScanPageOutput} from '@onedaycat/jaco-awsx'
+import {AppError, Clock, Constructor, InternalError, wrapError} from '@plimble/jaco-common'
+import {DynamoDBx, ScanPageOutput} from '@plimble/jaco-awsx'
 import {Aggregate} from '../../model/aggregate'
 import {createKeyCondition} from './create-key-condition'
 

@@ -1,5 +1,5 @@
-import {DomainEvent, isDomainEvent} from '@onedaycat/jaco-domain'
-import {Clock, IdGen} from '@onedaycat/jaco-common'
+import {DomainEvent, isDomainEvent} from '@plimble/jaco-domain'
+import {Clock, IdGen} from '@plimble/jaco-common'
 
 describe('DomainEvent', () => {
     interface Payload {

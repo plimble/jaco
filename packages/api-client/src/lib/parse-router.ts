@@ -1,7 +1,7 @@
 import * as glob from 'glob'
-import {Controller, controllerPaths, getMetadataApi} from '@onedaycat/jaco-core'
-import {AppErrorSchema, Constructor} from '@onedaycat/jaco-common'
-import {getSchema} from '@onedaycat/jaco-validator'
+import {Controller, controllerPaths, getMetadataApi} from '@plimble/jaco-core'
+import {AppErrorSchema, Constructor} from '@plimble/jaco-common'
+import {getSchema} from '@plimble/jaco-validator'
 
 export interface ApiSchema {
     method: string

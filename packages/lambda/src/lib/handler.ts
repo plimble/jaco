@@ -1,5 +1,5 @@
-import {App, Context} from '@onedaycat/jaco-core'
-import {AppError, wrapError} from '@onedaycat/jaco-common'
+import {App, Context} from '@plimble/jaco-core'
+import {AppError, wrapError} from '@plimble/jaco-common'
 import {Context as LambdaContext} from 'aws-lambda'
 import {EventResolver} from './event-parsers/resolve-event-parser'
 

@@ -1,5 +1,5 @@
 import {Tag} from './tag'
-import {Field} from '@onedaycat/jaco-validator'
+import {Field} from '@plimble/jaco-validator'
 
 export class Profile {
     @Field({type: 'string'})

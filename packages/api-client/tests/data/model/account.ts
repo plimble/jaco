@@ -1,5 +1,5 @@
 import {Profile} from './profile'
-import {Field} from '@onedaycat/jaco-validator'
+import {Field} from '@plimble/jaco-validator'
 
 export enum AccountType {
     USER = 'USER',

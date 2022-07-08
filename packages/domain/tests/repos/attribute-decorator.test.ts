@@ -10,7 +10,7 @@ import {
 } from '../../src/lib/model/attribute-decorator'
 import {Aggregate} from '../../src/lib/model/aggregate'
 import {Entity} from '../../src/lib/model/entity'
-import {Props} from '@onedaycat/jaco-common'
+import {Props} from '@plimble/jaco-common'
 
 describe('AggregateRepo', () => {
     type UN = U1 | U2

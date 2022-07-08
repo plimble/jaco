@@ -1,5 +1,5 @@
 import {Entity} from '../../src/lib/model/entity'
-import {Props} from '@onedaycat/jaco-common'
+import {Props} from '@plimble/jaco-common'
 
 describe('Entity', () => {
     describe('patch', () => {

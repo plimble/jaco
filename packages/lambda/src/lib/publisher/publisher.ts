@@ -1,4 +1,4 @@
-import {container, Singleton, wrapError} from '@onedaycat/jaco-common'
+import {container, Singleton, wrapError} from '@plimble/jaco-common'
 import {Message} from './message'
 import {KinesisClient} from './clients/kinesis.client'
 import {SnsFifoClient} from './clients/sns-fifo.client'

@@ -1,7 +1,7 @@
 import {SagaResult, Step} from './interfaces'
 import {State} from './state'
 import {container} from 'tsyringe'
-import {Constructor, deepClone, wrapError} from '@onedaycat/jaco-common'
+import {Constructor, deepClone, wrapError} from '@plimble/jaco-common'
 
 export abstract class Sagas<I, S> {
     protected abstract initStash: any

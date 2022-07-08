@@ -1,6 +1,6 @@
-import {Api, Context, Controller, HttpRes} from '@onedaycat/jaco-core'
+import {Api, Context, Controller, HttpRes} from '@plimble/jaco-core'
 import {Profile} from './model/profile'
-import {Maintenance} from '@onedaycat/jaco-common'
+import {Maintenance} from '@plimble/jaco-common'
 
 @Api({
     input: Profile,

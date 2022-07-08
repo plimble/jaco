@@ -1,4 +1,4 @@
-import {ApiRouter} from '@onedaycat/jaco-core'
+import {ApiRouter} from '@plimble/jaco-core'
 
 export const routes = new ApiRouter()
     .resource('account', r => {

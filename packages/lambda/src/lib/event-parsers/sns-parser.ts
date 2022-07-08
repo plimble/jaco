@@ -1,4 +1,4 @@
-import {AppError} from '@onedaycat/jaco-common'
+import {AppError} from '@plimble/jaco-common'
 import {MessagePayload, ReactorMessage} from '../publisher/message'
 import {SNSEvent} from 'aws-lambda'
 import {EventParser} from './resolve-event-parser'

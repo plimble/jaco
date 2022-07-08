@@ -12,7 +12,7 @@ import {
     StringType,
     TimestampType,
 } from './types'
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from '@plimble/jaco-common'
 
 export class TypeParser {
     root: ObjectType

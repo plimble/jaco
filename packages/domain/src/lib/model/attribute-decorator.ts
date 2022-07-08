@@ -1,5 +1,5 @@
 import 'reflect-metadata'
-import {Constructor} from '@onedaycat/jaco-common'
+import {Constructor} from '@plimble/jaco-common'
 
 const ATTRIBUTE_KEY = Symbol('jaco:attr')
 

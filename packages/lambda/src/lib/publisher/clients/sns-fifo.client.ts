@@ -1,6 +1,6 @@
 import {ClientPublisher} from '../interfaces'
-import {Singleton} from '@onedaycat/jaco-common'
-import {SNSX} from '@onedaycat/jaco-awsx'
+import {Singleton} from '@plimble/jaco-common'
+import {SNSX} from '@plimble/jaco-awsx'
 import {Message} from '../message'
 
 const eventTypeKey = 'event'

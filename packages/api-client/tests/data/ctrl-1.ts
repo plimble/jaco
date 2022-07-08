@@ -1,6 +1,6 @@
-import {Api, Context, Controller, HttpRes} from '@onedaycat/jaco-core'
+import {Api, Context, Controller, HttpRes} from '@plimble/jaco-core'
 import {Account} from './model/account'
-import {InternalError, Unauthorized} from '@onedaycat/jaco-common'
+import {InternalError, Unauthorized} from '@plimble/jaco-common'
 
 @Api({
     input: Account,
